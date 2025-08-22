@@ -91,65 +91,17 @@ keyUsage = keyEncipherment, dataEncipherment
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = $DOMAIN_NAME
-DNS.2 = $API_DOMAIN
-DNS.3 = $AUTH_DOMAIN
-DNS.4 = *.$DOMAIN_NAME
-DNS.5 = localhost
-IP.1 = 127.0.0.1
-EOF
-
-    # Generate private key
-    openssl genrsa -out "$cert_dir/$DOMAIN_NAME.key" 4096
-    
-    # Generate certificate
-    openssl req -new -x509 -key "$cert_dir/$DOMAIN_NAME.key" \
-        -out "$cert_dir/$DOMAIN_NAME.crt" \
-        -days 365 \
-        -config "$cert_dir/openssl.cnf" \
-        -extensions v3_req
-    
-    # Set proper permissions
-    chmod 600 "$cert_dir/$DOMAIN_NAME.key"
-    chmod 644 "$cert_dir/$DOMAIN_NAME.crt"
-    
-    log_success "✅ Self-signed certificates generated for FKS domains"
-    return 0
-}
-
-# Check if domain is accessible from internet
-check_domain_accessibility() {
-    local domain="$1"
-    
-    log_info "🌐 Checking if $domain is accessible from internet..."
-    
-    # Try to resolve domain
-    if ! dig +short "$domain" >/dev/null 2>&1; then
-        log_warn "⚠️  Domain $domain does not resolve"
-        return 1
-    fi
-    
-    # Check if port 80 is accessible (required for HTTP-01 challenge)
-    if ! timeout 10 bash -c "echo >/dev/tcp/$(dig +short "$domain")/80" 2>/dev/null; then
-        log_warn "⚠️  Port 80 is not accessible on $domain"
-        return 1
-    fi
-    
-    log_success "✅ Domain $domain is accessible"
-    return 0
-}
-
-# Generate Let's Encrypt certificate using DNS-01 challenge (Cloudflare)
-generate_letsencrypt_dns() {
-    log_info "🔐 Generating Let's Encrypt certificates for FKS domains using DNS-01..."
-    
-    # Check for Cloudflare credentials
-    if [ -z "${CLOUDFLARE_EMAIL:-}" ] || [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
-        log_error "❌ Cloudflare credentials not found"
-        return 1
-    fi
-    
-    # Create Cloudflare credentials file
+#!/usr/bin/env bash
+# Shim: ssl-manager moved to domains/ssl/manager.sh
+set -euo pipefail
+NEW_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/domains/ssl/manager.sh"
+if [[ -f "$NEW_PATH" ]]; then
+    exec "$NEW_PATH" "$@"
+else
+    echo "[WARN] Expected relocated script not found: $NEW_PATH" >&2
+    echo "TODO: restore full ssl-manager implementation under domains/ssl/manager.sh" >&2
+    exit 2
+fi
     mkdir -p "$PROJECT_ROOT/config/certbot"
     cat > "$PROJECT_ROOT/config/certbot/cloudflare.ini" << EOF
 dns_cloudflare_email = $CLOUDFLARE_EMAIL

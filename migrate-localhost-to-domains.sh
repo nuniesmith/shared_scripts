@@ -34,73 +34,11 @@ declare -A SERVICE_PORTS=(
     ["grafana"]="3001"
     ["prometheus"]="9090"
     ["training"]="8088"
-    ["transformer"]="8089"
-)
-
-print_step() {
-    echo -e "${GREEN}[STEP]${NC} $1"
-}
-
-print_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-backup_file() {
-    local file="$1"
-    if [[ -f "$file" ]]; then
-        cp "$file" "${file}.backup-$(date +%Y%m%d-%H%M%S)"
-        print_info "✓ Backed up: $file"
-    fi
-}
-
-update_docker_compose_files() {
-    print_step "Updating Docker Compose files"
-    
-    local compose_files=(
-        "docker-compose.yml"
-        "docker-compose.dev.yml"
-        "docker-compose.prod.yml"
-        "docker-compose.pull-only.yml"
-        "docker-compose.node-network.yml"
-    "docker-compose.yml"
-    )
-    
-    for file in "${compose_files[@]}"; do
-        local filepath="${PROJECT_ROOT}/${file}"
-        if [[ -f "$filepath" ]]; then
-            print_info "Updating: $file"
-            backup_file "$filepath"
-            
-            # Update environment variables
-            sed -i "s|REACT_APP_API_URL:.*http://localhost:8000|REACT_APP_API_URL: https://api.${DOMAIN}|g" "$filepath"
-            sed -i "s|REACT_APP_DATA_URL:.*http://localhost:9001|REACT_APP_DATA_URL: https://data.${DOMAIN}|g" "$filepath"
-            sed -i "s|REACT_APP_WS_URL:.*ws://localhost:8000|REACT_APP_WS_URL: wss://api.${DOMAIN}|g" "$filepath"
-            sed -i "s|VITE_API_URL:.*http://localhost:8000|VITE_API_URL: https://api.${DOMAIN}|g" "$filepath"
-            sed -i "s|VITE_DATA_URL:.*http://localhost:9001|VITE_DATA_URL: https://data.${DOMAIN}|g" "$filepath"
-            sed -i "s|VITE_WS_URL:.*ws://localhost:8000|VITE_WS_URL: wss://api.${DOMAIN}|g" "$filepath"
-            sed -i "s|REACT_APP_VSCODE_URL:.*http://localhost:8081|REACT_APP_VSCODE_URL: https://code.${DOMAIN}|g" "$filepath"
-            
-            # Update health check URLs (keep as localhost for internal checks)
-            # Only update external-facing URLs
-            sed -i "s|DOMAIN_NAME:.*localhost|DOMAIN_NAME: ${DOMAIN}|g" "$filepath"
-            
-            print_info "✓ Updated: $file"
-        else
-            print_warning "File not found: $file"
-        fi
-    done
-}
-
-update_environment_files() {
-    print_step "Updating environment files"
+    #!/usr/bin/env bash
+    # Shim: migrate-localhost-to-domains moved to migration/migrate-localhost-to-domains.sh
+    set -euo pipefail
+    NEW_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/migration/migrate-localhost-to-domains.sh"
+    if [[ -f "$NEW_PATH" ]]; then exec "$NEW_PATH" "$@"; else echo "[WARN] Missing $NEW_PATH (placeholder)." >&2; exit 2; fi
     
     local env_files=(
         ".env"

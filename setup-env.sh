@@ -8,55 +8,11 @@ set -e
 # Colors for output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
-# Logging functions
-log() { echo -e "${GREEN}[$(date +'%H:%M:%S')] $1${NC}"; }
-log_info() { echo -e "${BLUE}ℹ️  [$(date +'%H:%M:%S')] $1${NC}"; }
-log_warning() { echo -e "${YELLOW}⚠️  [$(date +'%H:%M:%S')] $1${NC}"; }
-log_error() { echo -e "${RED}❌ [$(date +'%H:%M:%S')] $1${NC}"; }
-
-ENV_FILE=".env.fks"
-TEMPLATE_CREATED=false
-
-# Function to prompt for input with default
-prompt_with_default() {
-    local prompt="$1"
-    local default="$2"
-    local varname="$3"
-    local secret="${4:-false}"
-    
-    if [ "$secret" = "true" ]; then
-        echo -n "$prompt"
-        if [ -n "$default" ]; then
-            echo -n " (default: ***): "
-        else
-            echo -n ": "
-        fi
-        read -s input
-        echo ""
-    else
-        echo -n "$prompt"
-        if [ -n "$default" ]; then
-            echo -n " (default: $default): "
-        else
-            echo -n ": "
-        fi
-        read input
-    fi
-    
-    if [ -z "$input" ] && [ -n "$default" ]; then
-        input="$default"
-    fi
-    
-    eval "$varname='$input'"
-}
-
-# Function to generate random password
-generate_password() {
-    openssl rand -base64 32 | tr -d "=+/" | cut -c1-25
+#!/usr/bin/env bash
+# Shim: setup-env moved to preflight/setup-env.sh
+set -euo pipefail
+NEW_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/preflight/setup-env.sh"
+if [[ -f "$NEW_PATH" ]]; then exec "$NEW_PATH" "$@"; else echo "[WARN] Missing $NEW_PATH (placeholder)." >&2; exit 2; fi
 }
 
 # Check if .env file already exists

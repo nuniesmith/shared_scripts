@@ -30,51 +30,11 @@ STOP_MODE="auto"          # auto, single, multi, auth, api, web, all
 FORCE_STOP=false
 REMOVE_VOLUMES=false
 REMOVE_IMAGES=false
-CLEANUP_ALL=false
-
-# =================================================================
-# LOGGING FUNCTIONS
-# =================================================================
-log() {
-    local level="$1"
-    shift
-    local message="$*"
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    
-    case "$level" in
-        "INFO")
-            echo -e "${GREEN}[INFO]${NC} [$timestamp] $message"
-            ;;
-        "WARN")
-            echo -e "${YELLOW}[WARN]${NC} [$timestamp] $message"
-            ;;
-        "ERROR")
-            echo -e "${RED}[ERROR]${NC} [$timestamp] $message"
-            ;;
-        "DEBUG")
-            echo -e "${BLUE}[DEBUG]${NC} [$timestamp] $message"
-            ;;
-        "SUCCESS")
-            echo -e "${GREEN}[SUCCESS]${NC} [$timestamp] $message"
-            ;;
-        "STOP")
-            echo -e "${PURPLE}[STOP]${NC} [$timestamp] $message"
-            ;;
-    esac
-}
-
-# =================================================================
-# ENVIRONMENT DETECTION
-# =================================================================
-detect_environment() {
-    # Check for server type markers
-    if [ -f "/etc/fks-server-type" ]; then
-        cat /etc/fks-server-type
-        return
-    fi
-    
-    # Check environment variables
-    if [ -n "$FKS_SERVER_TYPE" ]; then
+#!/usr/bin/env bash
+# Shim: stop-multi moved to orchestration/multi/stop.sh
+set -euo pipefail
+NEW_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/orchestration/multi/stop.sh"
+if [[ -f "$NEW_PATH" ]]; then exec "$NEW_PATH" "$@"; else echo "[WARN] Missing $NEW_PATH (placeholder)." >&2; exit 2; fi
         echo "$FKS_SERVER_TYPE"
         return
     fi

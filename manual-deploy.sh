@@ -44,73 +44,11 @@ EXAMPLES:
   # Deploy to dev server
   $0 --host dev.fkstrading.xyz
 
-  # Deploy as specific user
-  $0 --host 192.168.1.100 --user jordan --repo-dir /home/jordan/fks
-
-  # Force update even with local changes
-  $0 --host dev.fkstrading.xyz --force-pull
-
-ENVIRONMENT VARIABLES:
-  SSH_PASSWORD             Password for SSH authentication (if needed)
-  
-EOF
-}
-
-# Parse command line arguments
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --host)
-            TARGET_HOST="$2"
-            shift 2
-            ;;
-        --user)
-            TARGET_USER="$2"
-            shift 2
-            ;;
-        --repo-dir)
-            REPO_DIR="$2"
-            shift 2
-            ;;
-        --force-pull)
-            FORCE_PULL=true
-            shift
-            ;;
-        --verbose)
-            VERBOSE=true
-            shift
-            ;;
-        --help)
-            usage
-            exit 0
-            ;;
-        *)
-            log_error "Unknown option: $1"
-            usage
-            exit 1
-            ;;
-    esac
-done
-
-# Validate required parameters
-if [ -z "$TARGET_HOST" ]; then
-    log_error "Target host is required (--host)"
-    usage
-    exit 1
-fi
-
-# Set verbose mode
-if [ "$VERBOSE" = true ]; then
-    set -x
-fi
-
-log "Starting manual deployment to $TARGET_HOST"
-log_info "User: $TARGET_USER"
-log_info "Repository: $REPO_DIR"
-
-# Test SSH connectivity
-log_info "Testing SSH connectivity..."
-if ! timeout 10 ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_HOST" "echo 'SSH test successful'" 2>/dev/null; then
-    log_error "Cannot connect to $TARGET_USER@$TARGET_HOST via SSH"
+#!/usr/bin/env bash
+# Shim: manual-deploy moved to deployment/manual/manual-deploy.sh
+set -euo pipefail
+NEW_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/deployment/manual/manual-deploy.sh"
+if [[ -f "$NEW_PATH" ]]; then exec "$NEW_PATH" "$@"; else echo "[WARN] Missing $NEW_PATH (placeholder)." >&2; exit 2; fi
     log_error "Please ensure:"
     log_error "  1. Server is accessible"
     log_error "  2. SSH keys are configured or password authentication is enabled"

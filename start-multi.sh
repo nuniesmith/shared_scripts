@@ -1,50 +1,8 @@
-#!/bin/bash
-
-# =================================================================
-# FKS Trading Systems - Multi-Server Startup Script
-# =================================================================
-# 
-# Supports both single-server and multi-server deployments:
-# - Single Server: Traditional all-in-one deployment
-# - Multi Server: Separate auth, api, and web servers
-# 
-# =================================================================
-
-set -e  # Exit on any error
-
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-NC='\033[0m' # No Color
-
-# Configuration
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$SCRIPT_DIR"
-ENV_FILE="$PROJECT_ROOT/.env"
-
-# Deployment configuration
-DEPLOYMENT_MODE="single"  # single, multi, auth, api, web
-SERVER_TYPE="auto"        # auto, auth, api, web
-USE_GPU=false
-USE_MINIMAL=false
-USE_DEV=false
-BUILD_LOCAL="auto"
-
-# Docker configuration
-DOCKER_NAMESPACE="${DOCKER_NAMESPACE:-fkstrading}"
-DOCKER_REGISTRY="${DOCKER_REGISTRY:-docker.io}"
-
-# Multi-server configuration
-AUTH_SERVER_IP="${AUTH_SERVER_IP:-}"
-API_SERVER_IP="${API_SERVER_IP:-}"
-WEB_SERVER_IP="${WEB_SERVER_IP:-}"
-
-# =================================================================
-# LOGGING FUNCTIONS
+#!/usr/bin/env bash
+# Shim: start-multi moved to orchestration/multi/start.sh
+set -euo pipefail
+NEW_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/orchestration/multi/start.sh"
+if [[ -f "$NEW_PATH" ]]; then exec "$NEW_PATH" "$@"; else echo "[WARN] Missing $NEW_PATH (placeholder)." >&2; exit 2; fi
 # =================================================================
 log() {
     local level="$1"

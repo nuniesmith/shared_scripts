@@ -227,77 +227,17 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_cache_bypass \$http_upgrade;
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
-    }
-
-    # Health check endpoint
-    location /health {
-        proxy_pass http://127.0.0.1:${port}/health;
-        access_log off;
-    }
-}
-
-EOF
-    done
-
-    print_info "✓ Nginx configuration saved to: ${nginx_config}"
-    print_info "Copy this to your nginx sites-available directory and enable it"
-}
-
-test_dns_resolution() {
-    print_step "Testing DNS resolution"
-    echo
-
-    for subdomain in "${!FKS_SERVICES[@]}"; do
-        local fqdn="${subdomain}.${DOMAIN}"
-        if host "$fqdn" >/dev/null 2>&1; then
-            local resolved_ip
-            resolved_ip=$(dig +short "$fqdn" | head -1)
-            if [[ "$resolved_ip" == "$TAILSCALE_IP" ]]; then
-                print_info "✓ ${fqdn} -> ${resolved_ip}"
-            else
-                print_warning "✗ ${fqdn} -> ${resolved_ip} (expected ${TAILSCALE_IP})"
-            fi
+        #!/usr/bin/env bash
+        # Shim: setup-fks-domains moved to domains/infra/dns/setup-fks-domains.sh
+        set -euo pipefail
+        NEW_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/domains/infra/dns/setup-fks-domains.sh"
+        if [[ -f "$NEW_PATH" ]]; then
+            exec "$NEW_PATH" "$@"
         else
-            print_warning "✗ ${fqdn} - Not resolved"
+            echo "[WARN] Expected relocated script not found: $NEW_PATH" >&2
+            echo "TODO: restore full domain setup logic under domains/infra/dns/setup-fks-domains.sh" >&2
+            exit 2
         fi
-    done
-}
-
-update_environment_files() {
-    print_step "Updating environment files with new domains"
-    
-    # Update React .env
-    local react_env="/home/jordan/fks/src/web/react/.env"
-    if [[ -f "$react_env" ]]; then
-        sed -i "s|REACT_APP_API_URL=.*|REACT_APP_API_URL=https://api.${DOMAIN}|" "$react_env"
-        print_info "✓ Updated React environment file"
-    fi
-    
-    # Update Docker Compose environment variables
-    local docker_env="/home/jordan/fks/.env"
-    if [[ -f "$docker_env" ]]; then
-        if ! grep -q "DOMAIN_NAME" "$docker_env"; then
-            echo "DOMAIN_NAME=${DOMAIN}" >> "$docker_env"
-        else
-            sed -i "s|DOMAIN_NAME=.*|DOMAIN_NAME=${DOMAIN}|" "$docker_env"
-        fi
-        print_info "✓ Updated Docker environment file"
-    fi
-}
-
-main() {
-    print_banner
-
-    # Check prerequisites
-    if ! command -v jq >/dev/null 2>&1; then
-        print_error "jq is required but not installed"
-        print_info "Install with: sudo apt-get install jq (Ubuntu/Debian) or brew install jq (macOS)"
-        exit 1
-    fi
-
     if ! command -v curl >/dev/null 2>&1; then
         print_error "curl is required but not installed"
         exit 1

@@ -50,65 +50,11 @@ check_prerequisites() {
         exit 1
     fi
     
-    # Check Docker Compose
-    if ! docker compose version &> /dev/null && ! command -v docker-compose &> /dev/null; then
-        print_error "Docker Compose is not installed"
-        exit 1
-    fi
-    
-    # Set compose command
-    if docker compose version &> /dev/null; then
-        COMPOSE_CMD="docker compose"
-    else
-        COMPOSE_CMD="docker-compose"
-    fi
-    
-    # Check if network exists
-    if ! docker network ls | grep -q "${COMPOSE_PROJECT_NAME}-network"; then
-        print_info "Creating Docker network..."
-        docker network create "${COMPOSE_PROJECT_NAME}-network"
-    fi
-    
-    print_success "Prerequisites check passed"
-}
-
-# Function to start all exchange nodes
-start_all() {
-    print_info "Starting all exchange nodes..."
-    
-    # Start master node first if not running
-    if ! docker ps | grep -q "fks_node_network_master"; then
-        print_info "Starting master node first..."
-        $COMPOSE_CMD -p "$COMPOSE_PROJECT_NAME" -f docker-compose.yml -f docker-compose.node-network.yml up -d node-network-master
-        sleep 5
-    fi
-    
-    # Start all exchange nodes
-    $COMPOSE_CMD -p "$COMPOSE_PROJECT_NAME" $COMPOSE_FILES up -d
-    
-    print_success "All exchange nodes started"
-    show_status
-}
-
-# Function to start specific exchange nodes
-start_exchange() {
-    local exchange=$1
-    print_info "Starting ${exchange} node..."
-    
-    # Map exchange names to service names
-    case $exchange in
-        nyse|NYSE)
-            service="node-network-nyse"
-            ;;
-        cme|CME)
-            service="node-network-cme"
-            ;;
-        lse|LSE)
-            service="node-network-lse"
-            ;;
-        eurex|EUREX)
-            service="node-network-eurex"
-            ;;
+    #!/usr/bin/env bash
+    # Shim: manage-exchange-nodes moved to orchestration/manage-exchange-nodes.sh
+    set -euo pipefail
+    NEW_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/orchestration/manage-exchange-nodes.sh"
+    if [[ -f "$NEW_PATH" ]]; then exec "$NEW_PATH" "$@"; else echo "[WARN] Missing $NEW_PATH (placeholder)." >&2; exit 2; fi
         asx|ASX)
             service="node-network-asx"
             ;;

@@ -14,57 +14,17 @@ INSTALL_PATH="/opt/fks"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-log_info() { echo -e "${BLUE}ℹ️  $*${NC}"; }
-log_success() { echo -e "${GREEN}✅ $*${NC}"; }
-log_warn() { echo -e "${YELLOW}⚠️  $*${NC}"; }
-log_error() { echo -e "${RED}❌ $*${NC}"; }
-
-# Check if running as root
-check_root() {
-    if [ "$EUID" -ne 0 ]; then
-        log_error "This script must be run as root (use sudo)"
-        exit 1
-    fi
-}
-
-# Install project to system location
-install_project() {
-    log_info "Installing FKS project to $INSTALL_PATH..."
-    
-    # Create installation directory
-    mkdir -p "$INSTALL_PATH"
-    
-    # Copy project files (preserving structure)
-    rsync -av --exclude='.git' --exclude='*.log' --exclude='ssl/letsencrypt' --exclude='.venv' --exclude='node_modules' "$PROJECT_ROOT/" "$INSTALL_PATH/"
-    
-    # Ensure scripts are executable
-    chmod +x "$INSTALL_PATH/scripts/"*.sh
-    
-    # Create log directory
-    mkdir -p /var/log/fks-ssl
-    touch /var/log/fks-ssl-manager.log
-    chmod 644 /var/log/fks-ssl-manager.log
-    
-    # Set proper ownership
-    chown -R root:root "$INSTALL_PATH"
-    chmod 755 "$INSTALL_PATH"
-    
-    log_success "Project installed to $INSTALL_PATH"
-}
-
-# Create systemd service files
-create_systemd_files() {
-    log_info "Creating systemd service files..."
-    
-    # Create service file
-    cat > "/etc/systemd/system/${SERVICE_NAME}.service" << EOF
-[Unit]
-Description=FKS SSL Certificate Manager
-Documentation=https://github.com/nuniesmith/fks
-After=network-online.target docker.service
+#!/usr/bin/env bash
+# Shim: install-ssl-systemd moved to domains/ssl/systemd-install.sh
+set -euo pipefail
+NEW_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/domains/ssl/systemd-install.sh"
+if [[ -f "$NEW_PATH" ]]; then
+    exec "$NEW_PATH" "$@"
+else
+    echo "[WARN] Expected relocated script not found: $NEW_PATH" >&2
+    echo "TODO: restore full systemd SSL installer under domains/ssl/systemd-install.sh" >&2
+    exit 2
+fi
 Wants=network-online.target
 Requires=docker.service
 
