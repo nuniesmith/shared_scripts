@@ -34,8 +34,30 @@ if [ -z "$TARGET_DIR" ] || [ ! -d "$TARGET_DIR" ]; then
 fi
 
 # Ask for analysis type
-echo "Which files/code to analyze? Options: all, python, rust, csharp, mdtxt, shbash, jsts"
-read -r ANALYZE_TYPE
+echo "Which files/code to analyze? Choose one of the following options:"
+echo "1. all - All supported languages and files"
+echo "2. python - Python files and related configs"
+echo "3. rust - Rust files and Cargo configs"
+echo "4. csharp - C# files and project files"
+echo "5. jsts - JavaScript/TypeScript, HTML, CSS files and configs"
+echo "6. mdtxt - Markdown and text files"
+echo "7. shbash - Shell/bash scripts, Makefiles, Dockerfiles, and docker-compose files"
+read -r ANALYZE_INPUT
+
+# Map numbered input to type
+case "$ANALYZE_INPUT" in
+    1|all) ANALYZE_TYPE="all" ;;
+    2|python) ANALYZE_TYPE="python" ;;
+    3|rust) ANALYZE_TYPE="rust" ;;
+    4|csharp) ANALYZE_TYPE="csharp" ;;
+    5|jsts) ANALYZE_TYPE="jsts" ;;
+    6|mdtxt) ANALYZE_TYPE="mdtxt" ;;
+    7|shbash) ANALYZE_TYPE="shbash" ;;
+    *)
+        echo "Invalid choice. Please select a valid option."
+        exit 1
+        ;;
+esac
 
 # Set flags and filters based on choice
 DO_PYTHON=0
@@ -50,7 +72,7 @@ ADDITIONAL_GREP=""
 case "$ANALYZE_TYPE" in
     all)
         FILTER_EXT="py|pyx|pyi|ipynb|rs|cs|csproj|sln|js|jsx|ts|tsx|java|go|cpp|c|h|hpp|cc|cxx|php|rb|swift|kt|scala|clj|hs|ml|f|fs|r|sql|html|css|scss|sass|less|xml|yaml|yml|json|toml|cfg|ini|md|txt|dockerfile|makefile|cmake|gradle|pom|requirements|pipfile|pyproject|cargo|package|gemfile|composer"
-        ADDITIONAL_GREP="|requirements.*\.txt$|Pipfile$|pyproject\.toml$|Cargo\.toml$|Cargo\.lock$|package\.json$|\.csproj$|\.sln$|Gemfile$|composer\.json$|Makefile$|Dockerfile$"
+        ADDITIONAL_GREP="|requirements.*\.txt$|Pipfile$|pyproject\.toml$|Cargo\.toml$|Cargo\.lock$|package\.json$|\.csproj$|\.sln$|Gemfile$|composer\.json$|Makefile$|Dockerfile$|docker-compose\.yml$|docker-compose\.yaml$"
         DO_PYTHON=1
         DO_RUST=1
         DO_CSHARP=1
@@ -85,12 +107,8 @@ case "$ANALYZE_TYPE" in
         ;;
     shbash)
         FILTER_EXT="sh"
-        ADDITIONAL_GREP="|Makefile$|Dockerfile$"
+        ADDITIONAL_GREP="|Makefile$|Dockerfile$|docker-compose\.yml$|docker-compose\.yaml$"
         DO_OTHER=1
-        ;;
-    *)
-        echo "Invalid choice. Options: all, python, rust, csharp, mdtxt, shbash, jsts"
-        exit 1
         ;;
 esac
 
