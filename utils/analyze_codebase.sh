@@ -42,6 +42,7 @@ echo "4. csharp - C# files and project files"
 echo "5. jsts - JavaScript/TypeScript, HTML, CSS files and configs"
 echo "6. mdtxt - Markdown and text files"
 echo "7. shbash - Shell/bash scripts, Makefiles, Dockerfiles, and docker-compose files"
+echo "8. docker - Dockerfiles, docker-compose files, and .env files"
 read -r ANALYZE_INPUT
 
 # Map numbered input to type
@@ -53,6 +54,7 @@ case "$ANALYZE_INPUT" in
     5|jsts) ANALYZE_TYPE="jsts" ;;
     6|mdtxt) ANALYZE_TYPE="mdtxt" ;;
     7|shbash) ANALYZE_TYPE="shbash" ;;
+    8|docker) ANALYZE_TYPE="docker" ;;
     *)
         echo "Invalid choice. Please select a valid option."
         exit 1
@@ -71,8 +73,8 @@ FILTER_EXT=""
 ADDITIONAL_GREP=""
 case "$ANALYZE_TYPE" in
     all)
-        FILTER_EXT="py|pyx|pyi|ipynb|rs|cs|csproj|sln|js|jsx|ts|tsx|java|go|cpp|c|h|hpp|cc|cxx|php|rb|swift|kt|scala|clj|hs|ml|f|fs|r|sql|html|css|scss|sass|less|xml|yaml|yml|json|toml|cfg|ini|md|txt|dockerfile|makefile|cmake|gradle|pom|requirements|pipfile|pyproject|cargo|package|gemfile|composer"
-        ADDITIONAL_GREP="|requirements.*\.txt$|Pipfile$|pyproject\.toml$|Cargo\.toml$|Cargo\.lock$|package\.json$|\.csproj$|\.sln$|Gemfile$|composer\.json$|Makefile$|Dockerfile$|docker-compose\.yml$|docker-compose\.yaml$"
+        FILTER_EXT="py|pyx|pyi|ipynb|rs|cs|csproj|sln|js|jsx|ts|tsx|java|go|cpp|c|h|hpp|cc|cxx|php|rb|swift|kt|scala|clj|hs|ml|f|fs|r|sql|html|css|scss|sass|less|xml|yaml|yml|json|toml|cfg|ini|md|txt"
+        ADDITIONAL_GREP="|requirements.*\.txt$|Pipfile$|pyproject\.toml$|Cargo\.toml$|Cargo\.lock$|package\.json$|\.csproj$|\.sln$|Gemfile$|composer\.json$|Makefile$|Dockerfile$|docker-compose\.yml$|docker-compose\.yaml$|pom\.xml$|build\.gradle$|go\.mod$|go\.sum$"
         DO_PYTHON=1
         DO_RUST=1
         DO_CSHARP=1
@@ -110,6 +112,11 @@ case "$ANALYZE_TYPE" in
         ADDITIONAL_GREP="|Makefile$|Dockerfile$|docker-compose\.yml$|docker-compose\.yaml$"
         DO_OTHER=1
         ;;
+    docker)
+        FILTER_EXT=""
+        ADDITIONAL_GREP="|Dockerfile$|docker-compose\.yml$|docker-compose\.yaml$|\.env$"
+        DO_OTHER=1
+        ;;
 esac
 
 # Set output dir
@@ -125,11 +132,15 @@ echo "Linting: $( [ $LINT -eq 1 ] && echo "Yes" || echo "No" )"
 echo "Analysis type: $ANALYZE_TYPE"
 
 # Common exclusions (expandable)
-EXCLUDE_PATHS="-not -path '*/\.*' -not -path '*/__pycache__/*' -not -path '*/.pytest_cache/*' -not -path '*/.mypy_cache/*' -not -path '*/.tox/*' -not -path '*/venv/*' -not -path '*/env/*' -not -path '*/.env/*' -not -path '*/node_modules/*' -not -path '*/target/*' -not -path '*/bin/*' -not -path '*/obj/*' -not -path '*/.vs/*' -not -path '*/.idea/*' -not -path '*/.vscode/*' -not -path '*/coverage/*' -not -path '*/dist/*' -not -path '*/build/*'"
+EXCLUDE_HIDDEN="-not -path '*/\.*'"
+if [ "$ANALYZE_TYPE" = "docker" ]; then
+    EXCLUDE_HIDDEN=""
+fi
+EXCLUDE_PATHS="$EXCLUDE_HIDDEN -not -path '*/__pycache__/*' -not -path '*/.pytest_cache/*' -not -path '*/.mypy_cache/*' -not -path '*/.tox/*' -not -path '*/venv/*' -not -path '*/env/*' -not -path '*/node_modules/*' -not -path '*/target/*' -not -path '*/bin/*' -not -path '*/obj/*' -not -path '*/.vs/*' -not -path '*/.idea/*' -not -path '*/.vscode/*' -not -path '*/coverage/*' -not -path '*/dist/*' -not -path '*/build/*'"
 
 # Compute grep filter
 GREP_FILTER=""
-if [ -n "$FILTER_EXT" ]; then
+if [ -n "$FILTER_EXT" ] || [ -n "$ADDITIONAL_GREP" ]; then
     GREP_FILTER="| grep -E \"\.(${FILTER_EXT})\$${ADDITIONAL_GREP}\""
 fi
 
@@ -138,8 +149,10 @@ FILTERED_FIND="find \"$TARGET_DIR\" -type f $EXCLUDE_PATHS $GREP_FILTER 2>/dev/n
 
 # 1. Generate file tree structure (full, regardless of filter)
 echo "Generating file tree structure report..."
+TREE_OPTS=""
+if [ -z "$EXCLUDE_HIDDEN" ]; then TREE_OPTS="-a"; fi
 if command -v tree &> /dev/null; then
-    tree -n -I "__pycache__|.git|.pytest_cache|.mypy_cache|.tox|venv|env|.env|node_modules|target|bin|obj|.vs|.idea|.vscode|coverage|dist|build" "$TARGET_DIR" > "$OUTPUT_DIR/file_structure.txt"
+    tree $TREE_OPTS -n -I "__pycache__|.git|.pytest_cache|.mypy_cache|.tox|venv|env|node_modules|target|bin|obj|.vs|.idea|.vscode|coverage|dist|build" "$TARGET_DIR" > "$OUTPUT_DIR/file_structure.txt"
 else
     eval "find \"$TARGET_DIR\" $EXCLUDE_PATHS -type f -o -type d 2>/dev/null | sort | sed 's/[^/]*\//|   /g;s/| *\([^| ]\)/+--- \1/g'" > "$OUTPUT_DIR/file_structure.txt"
 fi
@@ -185,9 +198,23 @@ echo "Directory: $TARGET_DIR" >> "$SUMMARY_REPORT"
 echo "Generated on: $(date)" >> "$SUMMARY_REPORT"
 echo "=================" >> "$SUMMARY_REPORT"
 
-# File counts by extension (filtered)
-echo "File count by extension:" >> "$SUMMARY_REPORT"
-eval "$FILTERED_FIND | grep -E '\.[a-zA-Z0-9]+$' | sed 's/.*\.//' | sort | uniq -c | sort -nr" >> "$SUMMARY_REPORT"
+# List of analyzed files (filtered)
+echo "" >> "$SUMMARY_REPORT"
+echo "LIST OF ANALYZED FILES:" >> "$SUMMARY_REPORT"
+echo "======================" >> "$SUMMARY_REPORT"
+eval "$FILTERED_FIND" >> "$SUMMARY_REPORT"
+
+# File counts by extension (filtered), including files without extensions
+echo "" >> "$SUMMARY_REPORT"
+echo "File count by type/extension:" >> "$SUMMARY_REPORT"
+eval "$FILTERED_FIND | while read -r file; do
+    ext=\"\${file##*.}\"
+    if [ \"\$ext\" = \"\$file\" ]; then
+        echo \"no_ext\"
+    else
+        echo \"\$ext\"
+    fi
+done | sort | uniq -c | sort -nr" >> "$SUMMARY_REPORT"
 
 # Total/Avg size (filtered)
 total_files=$(eval "$FILTERED_FIND | wc -l")
@@ -196,6 +223,7 @@ avg_size=$((total_size / total_files)) 2>/dev/null || avg_size=0
 echo "Total files: $total_files | Total size: $total_size bytes | Avg size: $avg_size bytes" >> "$SUMMARY_REPORT"
 
 # Empties/Small (filtered)
+echo "" >> "$SUMMARY_REPORT"
 echo "EMPTY AND SMALL FILES ANALYSIS" >> "$SUMMARY_REPORT"
 echo "=============================" >> "$SUMMARY_REPORT"
 echo "Empty files (size 0 bytes):" >> "$SUMMARY_REPORT"
@@ -315,7 +343,7 @@ if [ $DO_GO -eq 1 ]; then
     fi
 fi
 
-# Programming patterns analysis (skip for non-code types like mdtxt, shbash unless all)
+# Programming patterns analysis (skip for non-code types like mdtxt, shbash, docker unless all)
 if [ $DO_OTHER -eq 0 ]; then
     echo "" >> "$SUMMARY_REPORT"
     echo "PROGRAMMING PATTERNS ANALYSIS:" >> "$SUMMARY_REPORT"
@@ -348,6 +376,12 @@ if [ $DO_JAVA -eq 1 ]; then
 fi
 if [ $DO_GO -eq 1 ]; then
     if [ -f "$TARGET_DIR/go.mod" ]; then echo "Go go.mod found" >> "$SUMMARY_REPORT"; fi
+fi
+if [ "$ANALYZE_TYPE" = "docker" ]; then
+    echo "Docker-related files found:" >> "$SUMMARY_REPORT"
+    eval "find \"$TARGET_DIR\" -name 'Dockerfile' $EXCLUDE_PATHS 2>/dev/null | sort" >> "$SUMMARY_REPORT"
+    eval "find \"$TARGET_DIR\" -name 'docker-compose.*' $EXCLUDE_PATHS 2>/dev/null | sort" >> "$SUMMARY_REPORT"
+    eval "find \"$TARGET_DIR\" -name '.env' $EXCLUDE_PATHS 2>/dev/null | sort" >> "$SUMMARY_REPORT"
 fi
 
 # 4. Optional: Linting (only for selected languages)
