@@ -151,8 +151,8 @@ check_backends() {
     
     # Define expected backend services based on nginx config
     local backends=(
-        "fks-api:8000"
-        "fks-web:3000"
+        "fks_api:8000"
+        "fks_web:3000"
         "ats-server:8080"
     )
     

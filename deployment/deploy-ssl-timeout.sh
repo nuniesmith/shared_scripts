@@ -178,14 +178,14 @@ SSLEOF
         sudo mkdir -p /home/fks_user/fks
         cd /tmp
         
-        timeout 120 git clone https://x-access-token:$GITHUB_TOKEN@github.com/nuniesmith/fks.git fks-fresh || {
+        timeout 120 git clone https://x-access-token:$GITHUB_TOKEN@github.com/nuniesmith/fks.git fks_fresh || {
             echo '❌ Repository clone timeout'
             exit 1
         }
         
-        sudo mv fks-fresh/* /home/fks_user/fks/
-        sudo mv fks-fresh/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
-        sudo rm -rf fks-fresh
+        sudo mv fks_fresh/* /home/fks_user/fks/
+        sudo mv fks_fresh/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
+        sudo rm -rf fks_fresh
         sudo chown -R fks_user:fks_user /home/fks_user/fks
         sudo chmod -R 755 /home/fks_user/fks
         echo '✅ Repository setup complete'

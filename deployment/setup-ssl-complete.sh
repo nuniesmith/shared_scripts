@@ -261,7 +261,7 @@ configure_nginx() {
     log_step "Configuring nginx with SSL..."
     
     # Create FKS Trading Systems nginx configuration
-    sudo tee /etc/nginx/sites-available/fks-ssl >/dev/null <<EOF
+    sudo tee /etc/nginx/sites-available/fks_ssl >/dev/null <<EOF
 # FKS Trading Systems - SSL Configuration
 # Redirect HTTP to HTTPS
 server {
@@ -339,7 +339,7 @@ server {
 EOF
 
     # Enable the site
-    sudo ln -sf /etc/nginx/sites-available/fks-ssl /etc/nginx/sites-enabled/
+    sudo ln -sf /etc/nginx/sites-available/fks_ssl /etc/nginx/sites-enabled/
     
     # Remove default nginx site
     sudo rm -f /etc/nginx/sites-enabled/default

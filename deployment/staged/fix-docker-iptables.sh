@@ -136,7 +136,7 @@ backup_iptables() {
         return 0
     fi
     
-    local backup_dir="/var/lib/fks-backups/iptables"
+    local backup_dir="/var/lib/fks_backups/iptables"
     local backup_file="$backup_dir/iptables-backup-$(date +%Y%m%d-%H%M%S).rules"
     
     log "Creating iptables backup..."
@@ -242,7 +242,7 @@ verify_docker_networking() {
     log "Verifying Docker networking..."
     
     # Check if Docker can create basic networks
-    local test_network="fks-test-network-$$"
+    local test_network="fks_test-network-$$"
     
     if docker network create "$test_network" >/dev/null 2>&1; then
         log "✅ Docker network creation test passed"

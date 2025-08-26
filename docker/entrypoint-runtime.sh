@@ -521,7 +521,7 @@ try_direct_binary() {
         "${APP_DIR}/bin/execution/${SERVICE_TYPE}"
         "${APP_DIR}/bin/connector/${SERVICE_TYPE}"
         "${APP_DIR}/bin/${SERVICE_TYPE}-service"
-        "${APP_DIR}/bin/fks-${SERVICE_TYPE}"
+        "${APP_DIR}/bin/fks_${SERVICE_TYPE}"
     )
     
     for binary_path in "${binary_paths[@]}"; do

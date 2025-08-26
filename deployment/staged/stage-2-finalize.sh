@@ -120,12 +120,12 @@ log "✅ SSH connectivity confirmed"
 log "Checking Stage 2 systemd service status..."
 
 SERVICE_STATUS=$(ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no jordan@"$TARGET_HOST" "
-    if sudo systemctl is-enabled fks-stage2.service >/dev/null 2>&1; then
-        if sudo systemctl is-active fks-stage2.service >/dev/null 2>&1; then
+    if sudo systemctl is-enabled fks_stage2.service >/dev/null 2>&1; then
+        if sudo systemctl is-active fks_stage2.service >/dev/null 2>&1; then
             echo 'running'
-        elif sudo systemctl status fks-stage2.service 2>/dev/null | grep -q 'Deactivated successfully'; then
+        elif sudo systemctl status fks_stage2.service 2>/dev/null | grep -q 'Deactivated successfully'; then
             echo 'completed'
-        elif sudo systemctl status fks-stage2.service 2>/dev/null | grep -q 'failed'; then
+        elif sudo systemctl status fks_stage2.service 2>/dev/null | grep -q 'failed'; then
             echo 'failed'
         else
             echo 'enabled-inactive'
@@ -192,9 +192,9 @@ case "$SERVICE_STATUS" in
             
             while [ $ELAPSED -lt $TIMEOUT ]; do
                 CURRENT_STATUS=$(ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no jordan@"$TARGET_HOST" "
-                    if sudo systemctl is-active fks-stage2.service >/dev/null 2>&1; then
+                    if sudo systemctl is-active fks_stage2.service >/dev/null 2>&1; then
                         echo 'running'
-                    elif sudo systemctl status fks-stage2.service 2>/dev/null | grep -q 'Deactivated successfully'; then
+                    elif sudo systemctl status fks_stage2.service 2>/dev/null | grep -q 'Deactivated successfully'; then
                         echo 'completed'
                     else
                         echo 'unknown'
@@ -216,7 +216,7 @@ case "$SERVICE_STATUS" in
             fi
         else
             log "Use --wait to wait for completion, or check manually:"
-            log "  ssh jordan@$TARGET_HOST 'sudo journalctl -u fks-stage2.service -f'"
+            log "  ssh jordan@$TARGET_HOST 'sudo journalctl -u fks_stage2.service -f'"
         fi
         ;;
         
@@ -226,10 +226,10 @@ case "$SERVICE_STATUS" in
         
         ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no jordan@"$TARGET_HOST" "
             echo '=== Stage 2 Service Status ==='
-            sudo systemctl status fks-stage2.service --no-pager || true
+            sudo systemctl status fks_stage2.service --no-pager || true
             echo ''
             echo '=== Recent Stage 2 Logs ==='
-            sudo journalctl -u fks-stage2.service --no-pager -n 30 || true
+            sudo journalctl -u fks_stage2.service --no-pager -n 30 || true
         " 2>/dev/null || warn "Could not get failure details"
         
         if [ "$FORCE_MANUAL" = "true" ]; then
@@ -279,14 +279,14 @@ if [ "$FORCE_MANUAL" = "true" ]; then
     
     log "Checking if Stage 2 script exists..."
     
-    if ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no jordan@"$TARGET_HOST" "test -f /usr/local/bin/fks-stage2.sh" 2>/dev/null; then
-        log "✅ Stage 2 script found at /usr/local/bin/fks-stage2.sh"
+    if ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no jordan@"$TARGET_HOST" "test -f /usr/local/bin/fks_stage2.sh" 2>/dev/null; then
+        log "✅ Stage 2 script found at /usr/local/bin/fks_stage2.sh"
         
         log "Executing Stage 2 script manually..."
         
         if ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no jordan@"$TARGET_HOST" "
             echo 'Starting manual Stage 2 execution...'
-            sudo /usr/local/bin/fks-stage2.sh
+            sudo /usr/local/bin/fks_stage2.sh
         " 2>/dev/null; then
             log "✅ Manual Stage 2 execution completed successfully!"
         else
@@ -296,7 +296,7 @@ if [ "$FORCE_MANUAL" = "true" ]; then
             exit 1
         fi
     else
-        error "❌ Stage 2 script not found at /usr/local/bin/fks-stage2.sh"
+        error "❌ Stage 2 script not found at /usr/local/bin/fks_stage2.sh"
         error "This suggests Stage 1 did not complete properly"
         error "You may need to re-run Stage 1 setup"
         exit 1

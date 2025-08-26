@@ -250,9 +250,9 @@ build_parallel() {
 }
 
 # Set up Docker buildx if not already configured
-if ! docker buildx ls | grep -q "fks-builder"; then
+if ! docker buildx ls | grep -q "fks_builder"; then
     print_status "$YELLOW" "Setting up Docker buildx..."
-    docker buildx create --name fks-builder --use
+    docker buildx create --name fks_builder --use
     docker buildx inspect --bootstrap
 fi
 

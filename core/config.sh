@@ -285,7 +285,7 @@ set_default_configurations() {
     FKS_DOCKER_CONFIG["elasticsearch_port"]="9200"
     
     # Network configuration
-    FKS_DOCKER_CONFIG["network_name"]="fks-network"
+    FKS_DOCKER_CONFIG["network_name"]="fks_network"
     FKS_DOCKER_CONFIG["network_driver"]="bridge"
     FKS_DOCKER_CONFIG["network_subnet"]="172.20.0.0/16"
     
@@ -605,7 +605,7 @@ load_docker_config_with_yq() {
     
     # Network configuration
     local network_name network_driver network_subnet
-    network_name=$(yq eval '.networks.default.name // .network.name // "fks-network"' "$config_file" 2>/dev/null)
+    network_name=$(yq eval '.networks.default.name // .network.name // "fks_network"' "$config_file" 2>/dev/null)
     network_driver=$(yq eval '.networks.default.driver // .network.driver // "bridge"' "$config_file" 2>/dev/null)
     network_subnet=$(yq eval '.networks.default.subnet // .network.subnet // "172.20.0.0/16"' "$config_file" 2>/dev/null)
     
@@ -692,7 +692,7 @@ try:
     network = data.get('network', {})
     default_network = networks.get('default', {})
     
-    config['network_name'] = default_network.get('name', network.get('name', 'fks-network'))
+    config['network_name'] = default_network.get('name', network.get('name', 'fks_network'))
     
     # Output configuration
     for key, value in config.items():

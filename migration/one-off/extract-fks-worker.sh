@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# One-off extraction script for fks-worker service.
-# Usage: ./migration/one-off/extract-fks-worker.sh <mono-root> <out-base> [--org yourorg] [--remote git@github.com:org/fks-worker.git]
+# One-off extraction script for fks_worker service.
+# Usage: ./migration/one-off/extract-fks_worker.sh <mono-root> <out-base> [--org yourorg] [--remote git@github.com:org/fks_worker.git]
 set -euo pipefail
 MONO_ROOT=${1:-}
 OUT_BASE=${2:-}
@@ -17,7 +17,7 @@ done
 [[ -z $MONO_ROOT || -z $OUT_BASE ]] && echo "Usage: $0 <mono-root> <out-base> [--org org] [--remote url]" >&2 && exit 1
 [[ ! -d $MONO_ROOT/.git ]] && echo "Monorepo root invalid" >&2 && exit 1
 command -v git-filter-repo >/dev/null || { echo "git-filter-repo not installed" >&2; exit 1; }
-SERVICE=fks-worker
+SERVICE=fks_worker
 WORK="$OUT_BASE/$SERVICE"
 rm -rf "$WORK"; mkdir -p "$OUT_BASE"
 echo "[STEP] Clone" >&2
@@ -27,14 +27,14 @@ echo "[STEP] Filter history" >&2
 git filter-repo --path fks_worker --force
 if [[ -d fks_worker ]]; then rsync -a fks_worker/ ./; rm -rf fks_worker; fi
 mkdir -p src tests
-declare -A MAPSUB=( [python]=fks-shared-python [schema]=fks-shared-schema [scripts]=fks-shared-scripts [docker]=fks-shared-docker [actions]=fks-shared-actions )
+declare -A MAPSUB=( [python]=shared_python [schema]=shared_schema [scripts]=shared_scripts [docker]=shared_docker [actions]=shared_actions )
 for s in python schema scripts docker actions; do repo="${MAPSUB[$s]}"; url="git@github.com:$ORG/$repo.git"; git submodule add -f "$url" "shared/$s" || true; done
-if grep -RIl '^from fks_shared\.' src >/dev/null 2>&1; then grep -RIl '^from fks_shared\.' src | while read -r f; do sed -i "s/^from fks_shared\./from fks_shared_python./" "$f" || true; done; fi
+if grep -RIl '^from fks_shared\.' src >/dev/null 2>&1; then grep -RIl '^from fks_shared\.' src | while read -r f; do sed -i "s/^from fks_shared\./from shared_python./" "$f" || true; done; fi
 TEMPLATES="$MONO_ROOT/migration/templates"
 mkdir -p .github/workflows docs
 cp "$TEMPLATES/ci-python.yml" .github/workflows/ci.yml
 if [[ ! -f README.md ]]; then sed -e "s/{{REPO_NAME}}/$SERVICE/g" -e "s/{{DESCRIPTION}}/Python background worker service/" -e "s/{{ORG}}/$ORG/" "$TEMPLATES/README.md.tpl" > README.md; fi
-if [[ ! -f docs/architecture.md ]]; then sed -e "s/{{INTERNAL_DEPS}}/shared-python/" -e "s/{{SHARED_MODULES}}/python schema scripts docker actions/" "$TEMPLATES/architecture.md.tpl" > docs/architecture.md; fi
+if [[ ! -f docs/architecture.md ]]; then sed -e "s/{{INTERNAL_DEPS}}/shared_python/" -e "s/{{SHARED_MODULES}}/python schema scripts docker actions/" "$TEMPLATES/architecture.md.tpl" > docs/architecture.md; fi
 sed -e "s/{{REPO_NAME}}/$SERVICE/g" "$TEMPLATES/Makefile.tpl" > Makefile
 cp "$TEMPLATES/update-submodules.sh" ./update-submodules.sh; chmod +x update-submodules.sh
 cp "$TEMPLATES/schema_assert.py" ./schema_assert.py; echo "v0.0.0" > schema_version.txt

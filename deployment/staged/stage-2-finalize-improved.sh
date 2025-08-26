@@ -14,15 +14,15 @@ NC='\033[0m'
 
 # Logging functions
 log() {
-    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks-stage2.log
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks_stage2.log
 }
 
 warn() {
-    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks-stage2.log
+    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks_stage2.log
 }
 
 error() {
-    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks-stage2.log
+    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks_stage2.log
 }
 
 # Start logging
@@ -31,8 +31,8 @@ log "Starting FKS Trading Systems Setup - Stage 2"
 log "============================================"
 
 # Read environment variables
-if [ -f /root/.fks-env ]; then
-    source /root/.fks-env
+if [ -f /root/.fks_env ]; then
+    source /root/.fks_env
 else
     error "Environment file not found!"
     exit 1
@@ -251,11 +251,11 @@ main() {
     setup_monitoring
     
     # Mark completion
-    touch /root/.fks-stage2-complete
-    echo "$(date): Stage 2 completed successfully" >> /root/.fks-stage2-complete
+    touch /root/.fks_stage2-complete
+    echo "$(date): Stage 2 completed successfully" >> /root/.fks_stage2-complete
     
     # Disable this service
-    systemctl disable fks-stage2.service
+    systemctl disable fks_stage2.service
     
     log "============================================"
     log "✅ Stage 2 completed successfully!"

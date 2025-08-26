@@ -58,7 +58,7 @@ echo "📜 Checking referenced scripts..."
 # Check if referenced scripts exist
 scripts=(
     "scripts/deployment/linode/linode-stackscript.sh"
-    "scripts/deployment/manual/fks-ssh-keygen.sh"
+    "scripts/deployment/manual/fks_ssh-keygen.sh"
 )
 
 for script in "${scripts[@]}"; do

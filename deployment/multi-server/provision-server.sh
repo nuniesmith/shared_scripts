@@ -68,13 +68,13 @@ Options:
 
 Examples:
     # Provision auth server
-    $0 --server-type auth --linode-type g6-nanode-1 --hostname fks-auth --label "FKS Auth Server" --subdomain auth.fkstrading.xyz
+    $0 --server-type auth --linode-type g6-nanode-1 --hostname fks_auth --label "FKS Auth Server" --subdomain auth.fkstrading.xyz
 
     # Provision API server with more resources
-    $0 --server-type api --linode-type g6-standard-2 --hostname fks-api --label "FKS API Server" --subdomain api.fkstrading.xyz
+    $0 --server-type api --linode-type g6-standard-2 --hostname fks_api --label "FKS API Server" --subdomain api.fkstrading.xyz
 
     # Force new web server
-    $0 --server-type web --linode-type g6-nanode-1 --hostname fks-web --label "FKS Web Server" --subdomain web.fkstrading.xyz --management-strategy force-new-servers
+    $0 --server-type web --linode-type g6-nanode-1 --hostname fks_web --label "FKS Web Server" --subdomain web.fkstrading.xyz --management-strategy force-new-servers
 
 EOF
 }

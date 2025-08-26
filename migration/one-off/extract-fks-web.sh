@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# One-off extraction for fks-web (React/TS frontend)
-# Usage: ./migration/one-off/extract-fks-web.sh <mono-root> <out-base> [--org yourorg] [--remote git@github.com:org/fks-web.git]
+# One-off extraction for fks_web (React/TS frontend)
+# Usage: ./migration/one-off/extract-fks_web.sh <mono-root> <out-base> [--org yourorg] [--remote git@github.com:org/fks_web.git]
 set -euo pipefail
 MONO_ROOT=${1:-}
 OUT_BASE=${2:-}
@@ -17,7 +17,7 @@ done
 [[ -z $MONO_ROOT || -z $OUT_BASE ]] && echo "Usage: $0 <mono-root> <out-base> [--org org] [--remote url]" >&2 && exit 1
 [[ ! -d $MONO_ROOT/.git ]] && echo "Monorepo root invalid" >&2 && exit 1
 command -v git-filter-repo >/dev/null || { echo "git-filter-repo not installed" >&2; exit 1; }
-SERVICE=fks-web
+SERVICE=fks_web
 WORK="$OUT_BASE/$SERVICE"
 rm -rf "$WORK"; mkdir -p "$OUT_BASE"
 
@@ -34,7 +34,7 @@ if [[ -d fks_web ]]; then rsync -a fks_web/ ./; rm -rf fks_web; fi
 mkdir -p src public .github/workflows docs
 
 # Add submodules (react, nginx, docker, actions, scripts)
-declare -A MAPSUB=( [react]=fks-shared-react [nginx]=fks-shared-nginx [docker]=fks-shared-docker [actions]=fks-shared-actions [scripts]=fks-shared-scripts )
+declare -A MAPSUB=( [react]=shared_react [nginx]=shared_nginx [docker]=shared_docker [actions]=shared_actions [scripts]=shared_scripts )
 for s in react nginx docker actions scripts; do
   url="git@github.com:$ORG/${MAPSUB[$s]}.git"
   git submodule add -f "$url" "shared/$s" || true
@@ -53,7 +53,7 @@ if [[ ! -f README.md ]]; then
   sed -e "s/{{REPO_NAME}}/$SERVICE/g" -e "s/{{DESCRIPTION}}/React UI frontend/" -e "s/{{ORG}}/$ORG/" "$TEMPLATES/README.md.tpl" > README.md
 fi
 if [[ ! -f docs/architecture.md ]]; then
-  sed -e "s/{{INTERNAL_DEPS}}/shared-react/" -e "s/{{SHARED_MODULES}}/react nginx docker actions scripts/" "$TEMPLATES/architecture.md.tpl" > docs/architecture.md
+  sed -e "s/{{INTERNAL_DEPS}}/shared_react/" -e "s/{{SHARED_MODULES}}/react nginx docker actions scripts/" "$TEMPLATES/architecture.md.tpl" > docs/architecture.md
 fi
 sed -e "s/{{REPO_NAME}}/$SERVICE/g" "$TEMPLATES/Makefile.tpl" > Makefile
 cp "$TEMPLATES/update-submodules.sh" ./update-submodules.sh; chmod +x update-submodules.sh

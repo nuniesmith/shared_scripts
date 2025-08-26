@@ -153,17 +153,17 @@ main() {
     case $choice in
         1)
             log "Generating SSH key for GitHub Actions..."
-            generate_ssh_key "actions_user_fks" "actions_user@fks-trading-system"
+            generate_ssh_key "actions_user_fks" "actions_user@fks_trading-system"
             
             # Instructions for GitHub setup
             add_secret_instructions "ACTIONS_USER_SSH_PUB" "SSH public key for GitHub Actions to access FKS server"
-            add_deploy_key_instructions "actions_user@fks-trading-system" "https://github.com/nuniesmith/fks"
+            add_deploy_key_instructions "actions_user@fks_trading-system" "https://github.com/nuniesmith/fks"
             
             copy_to_clipboard "$HOME/.ssh/actions_user_fks.pub"
             ;;
         2)
             log "Generating SSH key for Jordan..."
-            generate_ssh_key "jordan_fks" "jordan@fks-trading-system"
+            generate_ssh_key "jordan_fks" "jordan@fks_trading-system"
             
             add_secret_instructions "JORDAN_SSH_PUB" "Jordan's SSH public key for server access"
             
@@ -181,13 +181,13 @@ main() {
             
             if [ ! -f "$ACTIONS_KEY" ]; then
                 warn "actions_user SSH key not found. Generating..."
-                generate_ssh_key "actions_user_fks" "actions_user@fks-trading-system"
+                generate_ssh_key "actions_user_fks" "actions_user@fks_trading-system"
                 echo
             fi
             
             if [ ! -f "$JORDAN_KEY" ]; then
                 warn "jordan SSH key not found. Generating..."
-                generate_ssh_key "jordan_fks" "jordan@fks-trading-system"
+                generate_ssh_key "jordan_fks" "jordan@fks_trading-system"
                 echo
             fi
             

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Fix current deployment repository structure
-# This script moves the repository content from fks-temp to the correct location
+# This script moves the repository content from fks_temp to the correct location
 
 set -e
 
@@ -17,8 +17,8 @@ fi
 # Check current state
 echo "📋 Current state analysis:"
 echo "  - /home/fks_user/fks exists: $([ -d '/home/fks_user/fks' ] && echo 'YES' || echo 'NO')"
-echo "  - /home/fks_user/fks/fks-temp exists: $([ -d '/home/fks_user/fks/fks-temp' ] && echo 'YES' || echo 'NO')"
-echo "  - /home/actions_user/fks-temp exists: $([ -d '/home/actions_user/fks-temp' ] && echo 'YES' || echo 'NO')"
+echo "  - /home/fks_user/fks/fks_temp exists: $([ -d '/home/fks_user/fks/fks_temp' ] && echo 'YES' || echo 'NO')"
+echo "  - /home/actions_user/fks_temp exists: $([ -d '/home/actions_user/fks_temp' ] && echo 'YES' || echo 'NO')"
 
 # Function to move repository content
 move_repository_content() {
@@ -57,29 +57,29 @@ move_repository_content() {
 }
 
 # Try to find and move the repository content
-if [ -d "/home/fks_user/fks/fks-temp" ]; then
-    echo "✅ Found repository in /home/fks_user/fks/fks-temp"
+if [ -d "/home/fks_user/fks/fks_temp" ]; then
+    echo "✅ Found repository in /home/fks_user/fks/fks_temp"
     
-    # Check if fks-temp contains the actual repository
-    if [ -d "/home/fks_user/fks/fks-temp/.git" ] || [ -f "/home/fks_user/fks/fks-temp/docker-compose.yml" ]; then
-        echo "✅ Confirmed: fks-temp contains the repository"
+    # Check if fks_temp contains the actual repository
+    if [ -d "/home/fks_user/fks/fks_temp/.git" ] || [ -f "/home/fks_user/fks/fks_temp/docker-compose.yml" ]; then
+        echo "✅ Confirmed: fks_temp contains the repository"
         
-        # Move content from fks-temp to parent directory
-        echo "📦 Moving content from fks-temp to fks directory..."
+        # Move content from fks_temp to parent directory
+        echo "📦 Moving content from fks_temp to fks directory..."
         
         # Create temporary directory to store current fks content
         temp_backup="/tmp/fks_current_backup_$(date +%Y%m%d_%H%M%S)"
         mkdir -p "$temp_backup"
         
-        # Move current fks content to temp (excluding fks-temp)
-        find /home/fks_user/fks -maxdepth 1 -not -name "fks-temp" -not -name "." -not -name ".." -exec mv {} "$temp_backup/" \;
+        # Move current fks content to temp (excluding fks_temp)
+        find /home/fks_user/fks -maxdepth 1 -not -name "fks_temp" -not -name "." -not -name ".." -exec mv {} "$temp_backup/" \;
         
-        # Move fks-temp content to fks directory
-        mv /home/fks_user/fks/fks-temp/* /home/fks_user/fks/
-        mv /home/fks_user/fks/fks-temp/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
+        # Move fks_temp content to fks directory
+        mv /home/fks_user/fks/fks_temp/* /home/fks_user/fks/
+        mv /home/fks_user/fks/fks_temp/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
         
-        # Remove empty fks-temp directory
-        rmdir /home/fks_user/fks/fks-temp
+        # Remove empty fks_temp directory
+        rmdir /home/fks_user/fks/fks_temp
         
         # Restore any important files from backup
         if [ -f "$temp_backup/.env" ]; then
@@ -104,12 +104,12 @@ if [ -d "/home/fks_user/fks/fks-temp" ]; then
         echo "✅ Repository structure fixed successfully!"
         
     else
-        echo "❌ fks-temp doesn't contain the repository"
+        echo "❌ fks_temp doesn't contain the repository"
     fi
     
-elif [ -d "/home/actions_user/fks-temp" ]; then
-    echo "✅ Found repository in /home/actions_user/fks-temp"
-    move_repository_content "/home/actions_user/fks-temp"
+elif [ -d "/home/actions_user/fks_temp" ]; then
+    echo "✅ Found repository in /home/actions_user/fks_temp"
+    move_repository_content "/home/actions_user/fks_temp"
     
 else
     echo "❌ Repository not found in expected locations"

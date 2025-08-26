@@ -88,12 +88,12 @@ extract_repo() {
   mkdir -p .github/workflows docs
   local tmpl_dir="${MONO_ROOT}/migration/templates"
   local desc="Service extracted from monorepo"
-  if [[ $target == fks-shared-* ]]; then
+  if [[ $target == shared_* ]]; then
     desc="Shared component library"
   fi
-  if [[ $target == fks-shared-actions ]]; then
+  if [[ $target == shared_actions ]]; then
     # Seed composite actions
-    rsync -a "$tmpl_dir/shared-actions/" ./
+    rsync -a "$tmpl_dir/shared_actions/" ./
     git add actions || true
   fi
   # Detect language
@@ -119,7 +119,7 @@ extract_repo() {
     sed -e "s/{{REPO_NAME}}/$target/g" "$tmpl_dir/Makefile.tpl" > Makefile
   fi
   # Add submodule management script if this repo will consume submodules (heuristic: not shared repo itself)
-  if [[ $target != fks-shared-* ]]; then
+  if [[ $target != shared_* ]]; then
     cp "$tmpl_dir/update-submodules.sh" ./update-submodules.sh
     chmod +x update-submodules.sh
     # Schema assert support
@@ -215,7 +215,7 @@ summary='[]'
 summary_add() { local repo=$1; local count=$2; summary=$(echo "$summary" | jq --arg r "$repo" --arg c "$count" '. + [{repo:$r, files:($c|tonumber)}]'); }
 
 for TARGET in "${!PATHS[@]}"; do
-  if (( SKIP_SHARED )) && [[ $TARGET == fks-shared-* ]]; then continue; fi
+  if (( SKIP_SHARED )) && [[ $TARGET == shared_* ]]; then continue; fi
   if [[ -n $ONLY_LIST ]] && [[ -z ${ONLY[$TARGET]:-} ]]; then continue; fi
   mapfile -t ARR < <(printf "%s" "${PATHS[$TARGET]}" | sed '/^$/d')
   extract_repo "$TARGET" "${ARR[@]}"

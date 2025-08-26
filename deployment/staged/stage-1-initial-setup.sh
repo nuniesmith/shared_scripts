@@ -60,7 +60,7 @@ while [[ $# -gt 0 ]]; do
             JORDAN_PASSWORD="$2"
             shift 2
             ;;
-        --fks-user-password)
+        --fks_user-password)
             FKS_USER_PASSWORD="$2"
             shift 2
             ;;
@@ -121,7 +121,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --target-host <IP>             Server IP address"
             echo "  --root-password <pass>         Root password for initial SSH"
             echo "  --jordan-password <pass>       Password for jordan user"
-            echo "  --fks-user-password <pass>     Password for fks_user"
+            echo "  --fks_user-password <pass>     Password for fks_user"
             echo "  --actions-user-password u003cpassu003e   Password for actions_user"
             echo "  --tailscale-auth-key <key>     Tailscale auth key (REQUIRED)"
             echo ""
@@ -193,7 +193,7 @@ if [ -z "$JORDAN_PASSWORD" ]; then
 fi
 
 if [ -z "$FKS_USER_PASSWORD" ]; then
-    error "FKS user password is required (--fks-user-password)"
+    error "FKS user password is required (--fks_user-password)"
     exit 1
 fi
 
@@ -255,19 +255,19 @@ YELLOW='\\033[1;33m'
 NC='\\033[0m'
 
 # Create log file
-touch /var/log/fks-setup.log
-chmod 644 /var/log/fks-setup.log
+touch /var/log/fks_setup.log
+chmod 644 /var/log/fks_setup.log
 
 log() {
-    echo -e "\${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] \$1\${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "\${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] \$1\${NC}" | tee -a /var/log/fks_setup.log
 }
 
 warn() {
-    echo -e "\${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: \$1\${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "\${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: \$1\${NC}" | tee -a /var/log/fks_setup.log
 }
 
 error() {
-    echo -e "\${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: \$1\${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "\${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: \$1\${NC}" | tee -a /var/log/fks_setup.log
 }
 
 log "Starting FKS Trading Systems Setup - Stage 1 (Unified)"
@@ -408,7 +408,7 @@ chmod 700 /home/actions_user/.ssh
 rm -f /home/actions_user/.ssh/id_ed25519*
 
 # Generate new Ed25519 key
-ssh-keygen -t ed25519 -f /home/actions_user/.ssh/id_ed25519 -N "" -C "actions_user@fks-\$(date +%Y%m%d)"
+ssh-keygen -t ed25519 -f /home/actions_user/.ssh/id_ed25519 -N "" -C "actions_user@fks_\$(date +%Y%m%d)"
 
 # Set proper permissions
 chmod 600 /home/actions_user/.ssh/id_ed25519
@@ -559,7 +559,7 @@ if [ -n "\${DOCKER_USERNAME}" ] && [ -n "\${DOCKER_TOKEN}" ]; then
 fi
 
 # Save environment for Stage 2
-cat > /root/.fks-env << ENV_EOF
+cat > /root/.fks_env << ENV_EOF
 export TAILSCALE_AUTH_KEY="\${TAILSCALE_AUTH_KEY}"
 export DOCKER_USERNAME="\${DOCKER_USERNAME}"
 export DOCKER_TOKEN="\${DOCKER_TOKEN}"
@@ -567,10 +567,10 @@ export NETDATA_CLAIM_TOKEN="\${NETDATA_CLAIM_TOKEN}"
 export NETDATA_CLAIM_ROOM="\${NETDATA_CLAIM_ROOM}"
 export GITHUB_TOKEN="${GITHUB_TOKEN}"
 ENV_EOF
-chmod 600 /root/.fks-env
+chmod 600 /root/.fks_env
 
 # Create Stage 2 script with full deployment including Docker
-cat > /usr/local/bin/fks-stage2.sh << 'STAGE2_SCRIPT'
+cat > /usr/local/bin/fks_stage2.sh << 'STAGE2_SCRIPT'
 #!/bin/bash
 set -e
 
@@ -581,21 +581,21 @@ RED='\\033[0;31m'
 NC='\\033[0m'
 
 log() {
-    echo -e "\${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] \$1\${NC}" | tee -a /var/log/fks-stage2.log
+    echo -e "\${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] \$1\${NC}" | tee -a /var/log/fks_stage2.log
 }
 
 warn() {
-    echo -e "\${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: \$1\${NC}" | tee -a /var/log/fks-stage2.log
+    echo -e "\${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: \$1\${NC}" | tee -a /var/log/fks_stage2.log
 }
 
 error() {
-    echo -e "\${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: \$1\${NC}" | tee -a /var/log/fks-stage2.log
+    echo -e "\${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: \$1\${NC}" | tee -a /var/log/fks_stage2.log
 }
 
 log "Starting FKS Trading Systems Setup - Stage 2 (Complete Deployment)"
 
 # Read environment variables
-source /root/.fks-env 2>/dev/null || true
+source /root/.fks_env 2>/dev/null || true
 
 # Fix Docker iptables if needed
 fix_docker_iptables() {
@@ -746,11 +746,11 @@ if [ -n "\$NETDATA_CLAIM_TOKEN" ] && [ -n "\$NETDATA_CLAIM_ROOM" ]; then
 fi
 
 # Mark completion
-touch /root/.fks-stage2-complete
-echo "\$(date): Stage 2 completed successfully" >> /root/.fks-stage2-complete
+touch /root/.fks_stage2-complete
+echo "\$(date): Stage 2 completed successfully" >> /root/.fks_stage2-complete
 
 # Disable this service
-systemctl disable fks-stage2.service
+systemctl disable fks_stage2.service
 
 log "✅ Stage 2 completed successfully!"
 log "Server is fully deployed and ready!"
@@ -763,11 +763,11 @@ log "Web Interface: http://$(hostname -I | awk '{print $1}')"
 log "API: http://$(hostname -I | awk '{print $1}'):8000"
 STAGE2_SCRIPT
 
-chmod +x /usr/local/bin/fks-stage2.sh
+chmod +x /usr/local/bin/fks_stage2.sh
 
 
 # Create systemd service for Stage 2
-cat > /etc/systemd/system/fks-stage2.service << 'SERVICE'
+cat > /etc/systemd/system/fks_stage2.service << 'SERVICE'
 [Unit]
 Description=FKS Trading Systems Setup Stage 2
 After=network-online.target
@@ -777,7 +777,7 @@ Requires=network-online.target
 [Service]
 Type=oneshot
 ExecStartPre=/bin/sleep 15
-ExecStart=/usr/local/bin/fks-stage2.sh
+ExecStart=/usr/local/bin/fks_stage2.sh
 RemainAfterExit=yes
 StandardOutput=journal+console
 StandardError=journal+console
@@ -787,7 +787,7 @@ WantedBy=multi-user.target
 SERVICE
 
 systemctl daemon-reload
-systemctl enable fks-stage2.service
+systemctl enable fks_stage2.service
 
 log "✅ Stage 1 completed successfully!"
 # Enable services
@@ -839,7 +839,7 @@ if sshpass -p "$FKS_DEV_ROOT_PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKn
     
     # Extract SSH key from logs
     log "Retrieving generated SSH key..."
-    if SSH_KEY=$(sshpass -p "$FKS_DEV_ROOT_PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"$TARGET_HOST" "grep 'ACTIONS_USER_SSH_PUBLIC_KEY:' /var/log/fks-setup.log | tail -1 | cut -d':' -f2-" 2>/dev/null | tr -d ' '); then
+    if SSH_KEY=$(sshpass -p "$FKS_DEV_ROOT_PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@"$TARGET_HOST" "grep 'ACTIONS_USER_SSH_PUBLIC_KEY:' /var/log/fks_setup.log | tail -1 | cut -d':' -f2-" 2>/dev/null | tr -d ' '); then
         if [ -n "$SSH_KEY" ]; then
             echo "$SSH_KEY" > generated-ssh-key.txt
             log "✅ SSH key saved to generated-ssh-key.txt"

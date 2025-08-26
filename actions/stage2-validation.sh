@@ -20,7 +20,7 @@ if [[ -n "$SERVICE_NAME" ]]; then
     fi
 else
     # Fallback: check for any of the known networks
-    EXPECTED_NETWORKS=("nginx-network" "fks-network" "ats-network")
+    EXPECTED_NETWORKS=("nginx-network" "fks_network" "ats-network")
     for network in "${EXPECTED_NETWORKS[@]}"; do
         if docker network inspect "$network" >/dev/null 2>&1; then
             success "Docker network '$network' exists"
@@ -245,7 +245,7 @@ fi
 
 # Fallback: check for any known network
 if [[ "$NETWORK_FOUND" == "false" ]]; then
-    for network in nginx-network fks-network ats-network; do
+    for network in nginx-network fks_network ats-network; do
         if docker network inspect "$network" >/dev/null 2>&1; then
             NETWORK_FOUND=true
             break

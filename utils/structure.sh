@@ -396,7 +396,7 @@ create_app_config_template() {
     cat > "$config_file" << 'EOF'
 # FKS Trading Systems - App Configuration Template
 app:
-  name: "fks-systems"
+  name: "fks_systems"
   version: "1.0.0"
   environment: "development"
 
@@ -479,9 +479,9 @@ create_server_templates() {
 
 
 services:
-  fks-app:
+  fks_app:
     build: .
-    container_name: fks-app
+    container_name: fks_app
     environment:
       - FKS_MODE=server
       - FKS_DEBUG=false
@@ -492,9 +492,9 @@ services:
       - "8000:8000"
     restart: unless-stopped
     
-  fks-db:
+  fks_db:
     image: postgres:13
-    container_name: fks-db
+    container_name: fks_db
     environment:
       - POSTGRES_DB=fks
       - POSTGRES_USER=fks_user

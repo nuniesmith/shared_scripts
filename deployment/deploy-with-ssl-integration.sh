@@ -371,12 +371,12 @@ main() {
             export GIT_TERMINAL_PROMPT=0
             git config --global credential.helper store
             
-            if git clone https://x-access-token:\\$GITHUB_TOKEN@github.com/nuniesmith/fks.git fks-fresh; then
+            if git clone https://x-access-token:\\$GITHUB_TOKEN@github.com/nuniesmith/fks.git fks_fresh; then
                 echo '✅ Repository cloned successfully'
                 
-                sudo mv fks-fresh/* /home/fks_user/fks/
-                sudo mv fks-fresh/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
-                sudo rm -rf fks-fresh
+                sudo mv fks_fresh/* /home/fks_user/fks/
+                sudo mv fks_fresh/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
+                sudo rm -rf fks_fresh
                 
                 sudo chown -R fks_user:fks_user /home/fks_user/fks
                 sudo chmod -R 755 /home/fks_user/fks

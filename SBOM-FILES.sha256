@@ -56,7 +56,7 @@ fd865bb8b7cb8cee67cc2e67133c1021fe69231f84d344414aad99394b4ac636  ./deployment/g
 ebac04ce0513b7d7ec6e024e7c2cbf5a8f19ab560887abf659f76d2800a71d53  ./deployment/github-actions/deployment-optimizer.sh
 17628876700b8e07dddaf2406800d0f7ed85363175b721d9a195fa520c14af6f  ./deployment/github-actions/deployment_status.sh
 c6408e6e7b3bf47311463bdc757944421543c9336371ffe19416bcb7eff6933c  ./deployment/github-actions/emergency-ssh-debug.sh
-6c205cf08939f4f6e7600c1fd8715522dcc82e17df35acbb5f1408139a484f3c  ./deployment/github-actions/fks-ssh-keygen.sh
+6c205cf08939f4f6e7600c1fd8715522dcc82e17df35acbb5f1408139a484f3c  ./deployment/github-actions/fks_ssh-keygen.sh
 72ffe7116faba5c577a9f7123ce8e3cb66f4aad4dc800dac1d401cf79e1d9acc  ./deployment/github-actions/manual-cleanup-servers.sh
 a40d8c939d4cbbbf753e765c6e95c71fe37e0f7f7d680cc649f2e3e8b821cda9  ./deployment/github-actions/setup-github-secrets.sh
 d6f2b4224766ed1e158681e419b15a97e89239f49962a3d052a81e51d376ee15  ./deployment/github-actions/validate-workflow.sh
@@ -167,8 +167,8 @@ f95577983c36d77f1e454f510cbf822db4b86d7689aacf082bb1157ea9591367  ./ninja/linux/
 a3ff5f9a448866bc293e4cff05a224e509a5a604dc056797a63cd39caf27d83e  ./ninja/linux/create-alternative-format.sh
 8259d9ba71a818b0c91e755a1c2ce3a8c6163ef0d24da5025c68ab467ef92c60  ./ninja/linux/create-clean-minimal.sh
 61c671ea99a74602114d48144029007b4518679ebb834054fb263ec17c94aeb2  ./ninja/linux/create-empty-test.sh
-c386f17ae311d0b4555c7512ee6cb5d278e491863bc08dd69bc0c11042ad0835  ./ninja/linux/create-fks-old-format.sh
-3afd8f5f0c0babe8f8911a77f81534a0a2e50e7298f117c364ab91e7b50a4170  ./ninja/linux/create-fks-source-only.sh
+c386f17ae311d0b4555c7512ee6cb5d278e491863bc08dd69bc0c11042ad0835  ./ninja/linux/create-fks_old-format.sh
+3afd8f5f0c0babe8f8911a77f81534a0a2e50e7298f117c364ab91e7b50a4170  ./ninja/linux/create-fks_source-only.sh
 c49e9b630685d16a904d676999267e2b52201cee1f62a4bc21970b5a8a17778e  ./ninja/linux/create-manual-install.sh
 178f53e8595e779841c302f447b72e8f6a6b42df27382ff541bf32c36d7bb42f  ./ninja/linux/create-minimal-source-only.sh
 7883121b4249b12a5a5eabea6ce208ed9fedc12897bb737b1fdb314ba7e112d4  ./ninja/linux/create-minimal-test.sh
@@ -245,7 +245,7 @@ f4a0e7d4a0725711872e95185c9c6c47e5cf669bf2aaed39556ede6956650083  ./run/yaml/val
 8298ed301404b726e869267f2b1c43dc9bd12669c14fe97562c07bd72a6bfca2  ./SBOM-FILES.sha256
 1a487f23a943bdb9330c2287fa3e8945a028afd46a45c8e632503b86dc2e19ce  ./services/start_rithmic.sh
 0ec27beb24e2612a0d6f844ab9f201218c6e73eb33f3ead9dcc3f42990f58561  ./setup-env.sh
-005f2ca17375374b7a63a5f16067ea46da93a0aa966980ec97bf65c3ca55004c  ./setup-fks-domains.sh
+005f2ca17375374b7a63a5f16067ea46da93a0aa966980ec97bf65c3ca55004c  ./setup-fks_domains.sh
 c044792b168129e284a3700e8f5c894cef7f973ddd09cb0561ab7c39a5531aee  ./setup-ssh-key.sh
 038c2c2db6767e2e273010e53d3edb8c358f71c7e5a224281a1a207156b89d7d  ./setup-ssh-keys.sh
 6b2e6a8181cfc85f96586de39ebca68e067d6a8a1b9cfcfb70ff71f837b04f02  ./smoke/run_python_repos.sh

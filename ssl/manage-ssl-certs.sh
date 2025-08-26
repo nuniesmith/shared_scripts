@@ -11,7 +11,7 @@ DOMAIN="${DOMAIN:-fkstrading.xyz}"
 EMAIL="${ADMIN_EMAIL:-${LETSENCRYPT_EMAIL:-nunie.smith01@gmail.com}}"
 WEBROOT_PATH="${WEBROOT_PATH:-/var/www/html}"
 CERT_PATH="/etc/letsencrypt/live"
-LOG_FILE="/var/log/fks-ssl-manager.log"
+LOG_FILE="/var/log/fks_ssl-manager.log"
 STAGING="${STAGING:-false}"
 
 # Subdomains to include in certificate
@@ -89,15 +89,15 @@ setup_nginx() {
     chown -R nginx:nginx "$WEBROOT_PATH" 2>/dev/null || chown -R www-data:www-data "$WEBROOT_PATH" 2>/dev/null || true
     
     # Create basic nginx configuration for ACME challenge
-    if [ ! -f "/etc/nginx/sites-available/fks-ssl" ] && [ ! -f "/etc/nginx/conf.d/fks-ssl.conf" ]; then
+    if [ ! -f "/etc/nginx/sites-available/fks_ssl" ] && [ ! -f "/etc/nginx/conf.d/fks_ssl.conf" ]; then
         log "${YELLOW}📝 Creating nginx configuration for SSL setup...${NC}"
         
         # Determine nginx config location
         if [ -d "/etc/nginx/sites-available" ]; then
-            NGINX_CONFIG="/etc/nginx/sites-available/fks-ssl"
-            NGINX_ENABLED="/etc/nginx/sites-enabled/fks-ssl"
+            NGINX_CONFIG="/etc/nginx/sites-available/fks_ssl"
+            NGINX_ENABLED="/etc/nginx/sites-enabled/fks_ssl"
         else
-            NGINX_CONFIG="/etc/nginx/conf.d/fks-ssl.conf"
+            NGINX_CONFIG="/etc/nginx/conf.d/fks_ssl.conf"
             NGINX_ENABLED=""
         fi
         
@@ -191,7 +191,7 @@ configure_ssl_nginx() {
     log "${BLUE}🔧 Configuring nginx with SSL...${NC}"
     
     # Create SSL configuration
-    SSL_CONFIG="/etc/nginx/conf.d/fks-ssl-enabled.conf"
+    SSL_CONFIG="/etc/nginx/conf.d/fks_ssl-enabled.conf"
     
     cat > "$SSL_CONFIG" << EOF
 # FKS Trading Systems - SSL Configuration
@@ -322,7 +322,7 @@ setup_auto_renewal() {
     log "${BLUE}⏰ Setting up automatic certificate renewal...${NC}"
     
     # Create renewal hook script
-    RENEWAL_HOOK="/etc/letsencrypt/renewal-hooks/deploy/fks-renewal.sh"
+    RENEWAL_HOOK="/etc/letsencrypt/renewal-hooks/deploy/fks_renewal.sh"
     mkdir -p "$(dirname "$RENEWAL_HOOK")"
     
     cat > "$RENEWAL_HOOK" << 'EOF'
@@ -333,7 +333,7 @@ setup_auto_renewal() {
 systemctl reload nginx
 
 # Log renewal
-echo "$(date): FKS SSL certificates renewed" >> /var/log/fks-ssl-manager.log
+echo "$(date): FKS SSL certificates renewed" >> /var/log/fks_ssl-manager.log
 EOF
     
     chmod +x "$RENEWAL_HOOK"
@@ -382,8 +382,8 @@ cleanup() {
     fi
     
     # Remove nginx configurations
-    rm -f "/etc/nginx/sites-available/fks-ssl" "/etc/nginx/sites-enabled/fks-ssl"
-    rm -f "/etc/nginx/conf.d/fks-ssl.conf" "/etc/nginx/conf.d/fks-ssl-enabled.conf"
+    rm -f "/etc/nginx/sites-available/fks_ssl" "/etc/nginx/sites-enabled/fks_ssl"
+    rm -f "/etc/nginx/conf.d/fks_ssl.conf" "/etc/nginx/conf.d/fks_ssl-enabled.conf"
     
     # Reload nginx
     nginx -t && systemctl reload nginx

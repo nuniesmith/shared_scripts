@@ -2,7 +2,7 @@
 """Lightweight schema -> types synchronizer.
 
 Current scope: trade_signal.schema.json -> update autogen blocks in:
-  - python: repo/shared/python/src/fks_shared_python/types.py
+  - python: repo/shared/python/src/shared_python/types.py
   - rust:   repo/shared/rust/src/types.rs
   - ts:     repo/shared/react/src/types/trading.ts
 
@@ -117,7 +117,7 @@ def replace_block(content: str, new_block: str) -> str:
 def process(schema_file: Path, write: bool, check: bool) -> int:
     schema = json.loads(schema_file.read_text())
     spec = TradeSignalSpec.from_schema(schema)
-    py_file = ROOT / "repo" / "shared" / "python" / "src" / "fks_shared_python" / "types.py"
+    py_file = ROOT / "repo" / "shared" / "python" / "src" / "shared_python" / "types.py"
     py_content = py_file.read_text()
     py_block = gen_python(spec)
     py_new = replace_block(py_content, py_block)

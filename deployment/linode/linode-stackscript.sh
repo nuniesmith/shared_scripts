@@ -47,16 +47,16 @@ fi
 
 # Debug UDF variables (Linode StackScript User Defined Fields)
 # Note: Linode converts UDF names to uppercase
-echo "=== DEBUG: UDF Variables ===" >> /var/log/fks-setup.log
-echo "JORDAN_PASSWORD: $([ -n "$JORDAN_PASSWORD" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks-setup.log
-echo "FKS_USER_PASSWORD: $([ -n "$FKS_USER_PASSWORD" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks-setup.log
-echo "TAILSCALE_AUTH_KEY: $([ -n "$TAILSCALE_AUTH_KEY" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks-setup.log
-echo "DOCKER_USERNAME: $([ -n "$DOCKER_USERNAME" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks-setup.log
-echo "DOCKER_TOKEN: $([ -n "$DOCKER_TOKEN" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks-setup.log
-echo "NETDATA_CLAIM_TOKEN: $([ -n "$NETDATA_CLAIM_TOKEN" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks-setup.log
-echo "NETDATA_CLAIM_ROOM: $([ -n "$NETDATA_CLAIM_ROOM" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks-setup.log
-echo "TIMEZONE: ${TIMEZONE:-NOT_SET}" >> /var/log/fks-setup.log
-echo "===========================" >> /var/log/fks-setup.log
+echo "=== DEBUG: UDF Variables ===" >> /var/log/fks_setup.log
+echo "JORDAN_PASSWORD: $([ -n "$JORDAN_PASSWORD" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks_setup.log
+echo "FKS_USER_PASSWORD: $([ -n "$FKS_USER_PASSWORD" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks_setup.log
+echo "TAILSCALE_AUTH_KEY: $([ -n "$TAILSCALE_AUTH_KEY" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks_setup.log
+echo "DOCKER_USERNAME: $([ -n "$DOCKER_USERNAME" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks_setup.log
+echo "DOCKER_TOKEN: $([ -n "$DOCKER_TOKEN" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks_setup.log
+echo "NETDATA_CLAIM_TOKEN: $([ -n "$NETDATA_CLAIM_TOKEN" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks_setup.log
+echo "NETDATA_CLAIM_ROOM: $([ -n "$NETDATA_CLAIM_ROOM" ] && echo "SET" || echo "NOT SET")" >> /var/log/fks_setup.log
+echo "TIMEZONE: ${TIMEZONE:-NOT_SET}" >> /var/log/fks_setup.log
+echo "===========================" >> /var/log/fks_setup.log
 
 # Colors for output
 RED='\033[0;31m'
@@ -66,20 +66,20 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Create log file
-touch /var/log/fks-setup.log
-chmod 644 /var/log/fks-setup.log
+touch /var/log/fks_setup.log
+chmod 644 /var/log/fks_setup.log
 
 # Logging functions
 log() {
-    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 warn() {
-    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 error() {
-    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 # Detect distribution
@@ -365,7 +365,7 @@ setup_firewall() {
 }
 
 # Determine which phase we're in
-PHASE_FILE="/root/.fks-setup-phase"
+PHASE_FILE="/root/.fks_setup-phase"
 if [ -f "$PHASE_FILE" ]; then
     PHASE=2
 else
@@ -487,7 +487,7 @@ if [ $PHASE -eq 1 ]; then
         TEMP_PASS=$(openssl rand -base64 12)
         echo "jordan:${TEMP_PASS}" | chpasswd
         warn "No password provided for jordan user, generated temporary password: ${TEMP_PASS}"
-        echo "JORDAN_TEMP_PASSWORD: ${TEMP_PASS}" >> /var/log/fks-setup.log
+        echo "JORDAN_TEMP_PASSWORD: ${TEMP_PASS}" >> /var/log/fks_setup.log
     fi
     
     # Add to sudo group (different on Arch)
@@ -517,7 +517,7 @@ if [ $PHASE -eq 1 ]; then
         TEMP_PASS=$(openssl rand -base64 12)
         echo "fks_user:${TEMP_PASS}" | chpasswd
         warn "No password provided for fks_user, generated temporary password: ${TEMP_PASS}"
-        echo "FKS_USER_TEMP_PASSWORD: ${TEMP_PASS}" >> /var/log/fks-setup.log
+        echo "FKS_USER_TEMP_PASSWORD: ${TEMP_PASS}" >> /var/log/fks_setup.log
     fi
     
     log "Creating actions_user user..."
@@ -662,7 +662,7 @@ EOF
         
         # Generate ED25519 key pair (more secure than RSA)
         log "Generating ED25519 SSH key pair for actions_user..."
-        sudo -u actions_user ssh-keygen -t ed25519 -f /home/actions_user/.ssh/id_ed25519 -N "" -C "actions_user@fks-dev-$(date +%Y%m%d)" || {
+        sudo -u actions_user ssh-keygen -t ed25519 -f /home/actions_user/.ssh/id_ed25519 -N "" -C "actions_user@fks_dev-$(date +%Y%m%d)" || {
             error "Failed to generate SSH key for actions_user"
             exit 1
         }
@@ -679,9 +679,9 @@ EOF
         log "Generated SSH key for actions_user: $GENERATED_KEY"
         
         # Log in multiple formats for easy retrieval
-        echo "GENERATED_ACTIONS_USER_SSH_PUB: $GENERATED_KEY" >> /var/log/fks-setup.log
-        echo "SSH_KEY_FOR_GITHUB_ACTIONS: $GENERATED_KEY" >> /var/log/fks-setup.log
-        echo "actions_user@fks-dev SSH public key: $GENERATED_KEY" >> /var/log/fks-setup.log
+        echo "GENERATED_ACTIONS_USER_SSH_PUB: $GENERATED_KEY" >> /var/log/fks_setup.log
+        echo "SSH_KEY_FOR_GITHUB_ACTIONS: $GENERATED_KEY" >> /var/log/fks_setup.log
+        echo "actions_user@fks_dev SSH public key: $GENERATED_KEY" >> /var/log/fks_setup.log
         
         # Also save to a dedicated file for easy access
         echo "$GENERATED_KEY" > /home/actions_user/.ssh/public_key_for_github.txt
@@ -691,7 +691,7 @@ EOF
         log "[OK] SSH key generation completed successfully"
         log "[INFO] Key saved to: /home/actions_user/.ssh/id_ed25519.pub"
         log "[INFO] Also saved to: /home/actions_user/.ssh/public_key_for_github.txt"
-        log "[INFO] Logged to: /var/log/fks-setup.log"
+        log "[INFO] Logged to: /var/log/fks_setup.log"
         
         # Test the key works for local authentication
         log "[TEST] Testing SSH key functionality..."
@@ -707,12 +707,12 @@ EOF
     # Create root fallback SSH key for emergency access
     if [ -z "$ROOT_SSH_KEY" ]; then
         log "Generating emergency SSH key for root..."
-        ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -N "" -C "root@fks-dev"
+        ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -N "" -C "root@fks_dev"
         
         # Output the public key for manual setup
         GENERATED_ROOT_KEY=$(cat /root/.ssh/id_ed25519.pub)
         log "Generated emergency SSH key for root: $GENERATED_ROOT_KEY"
-        echo "GENERATED_ROOT_SSH_PUB: $GENERATED_ROOT_KEY" >> /var/log/fks-setup.log
+        echo "GENERATED_ROOT_SSH_PUB: $GENERATED_ROOT_KEY" >> /var/log/fks_setup.log
     fi
     
     # Configure SSH
@@ -754,7 +754,7 @@ EOF
     
     # Create Phase 2 script
     log "Creating Phase 2 script..."
-    cat > /usr/local/bin/fks-phase2.sh << 'PHASE2_SCRIPT'
+    cat > /usr/local/bin/fks_phase2.sh << 'PHASE2_SCRIPT'
 #!/bin/bash
 
 # Exit on any error
@@ -767,15 +767,15 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 log() {
-    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 warn() {
-    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 error() {
-    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 log "Starting FKS Trading Systems Setup - PHASE 2"
@@ -787,7 +787,7 @@ if [ -f /etc/os-release ]; then
 fi
 
 # Read environment variables from phase 1
-source /root/.fks-env 2>/dev/null || true
+source /root/.fks_env 2>/dev/null || true
 
 # Configure firewall for Arch (now that kernel modules are available after reboot)
 if [ "$DISTRO" = "arch" ]; then
@@ -1046,12 +1046,12 @@ alias ...='cd ../..'
 
 # FKS specific
 alias fks='cd ~/fks'
-alias fks-logs='cd ~/fks && docker compose logs -f'
-alias fks-status='cd ~/fks && docker compose ps'
-alias fks-restart='cd ~/fks && ./start.sh'
-alias fks-stop='cd ~/fks && docker compose down'
-alias fks-rebuild='cd ~/fks && docker compose down && docker compose build && docker compose up -d'
-alias fks-update='cd ~/fks && git pull && ./start.sh'
+alias fks_logs='cd ~/fks && docker compose logs -f'
+alias fks_status='cd ~/fks && docker compose ps'
+alias fks_restart='cd ~/fks && ./start.sh'
+alias fks_stop='cd ~/fks && docker compose down'
+alias fks_rebuild='cd ~/fks && docker compose down && docker compose build && docker compose up -d'
+alias fks_update='cd ~/fks && git pull && ./start.sh'
 
 # Docker aliases
 alias d='docker'
@@ -1100,7 +1100,7 @@ echo "FKS Trading Systems Dev Server - Ready!"
 echo "Hostname: $(hostname)"
 echo "Project: ~/fks"
 echo "Tailscale: $(tailscale ip -4 2>/dev/null || echo 'ERROR: Not connected')"
-echo "Run 'fks-restart' to start the Docker environment"
+echo "Run 'fks_restart' to start the Docker environment"
 echo "Run 'system-status' for a quick system overview"
 EOF
 
@@ -1143,10 +1143,10 @@ echo "  Rust: $(rustc --version 2>/dev/null | cut -d' ' -f2)"
 echo ""
 echo "Quick Commands:"
 echo "  fks          - Go to project directory"
-echo "  fks-status   - Check running containers"
-echo "  fks-logs     - View container logs"
-echo "  fks-restart  - Start/restart all services"
-echo "  fks-update   - Pull code & restart"
+echo "  fks_status   - Check running containers"
+echo "  fks_logs     - View container logs"
+echo "  fks_restart  - Start/restart all services"
+echo "  fks_update   - Pull code & restart"
 echo "  ts           - Tailscale status"
 echo "  tss          - Tailscale status (short)"
 echo ""
@@ -1199,8 +1199,8 @@ else
 fi
 
 # Clean up
-rm -f /root/.fks-setup-phase
-rm -f /root/.fks-env
+rm -f /root/.fks_setup-phase
+rm -f /root/.fks_env
 
 log "============================================"
 log "FKS Trading Systems Setup - PHASE 2 COMPLETE"
@@ -1252,29 +1252,29 @@ log "3. Start services: cd <repo-name> && ./start.sh"
 log "============================================"
 
 # Create completion marker for GitHub Actions
-echo "PHASE_2_COMPLETE" > /tmp/fks-setup-complete
-chown actions_user:actions_user /tmp/fks-setup-complete
-echo "$(date): FKS Trading Systems setup completed successfully" >> /tmp/fks-setup-complete
+echo "PHASE_2_COMPLETE" > /tmp/fks_setup-complete
+chown actions_user:actions_user /tmp/fks_setup-complete
+echo "$(date): FKS Trading Systems setup completed successfully" >> /tmp/fks_setup-complete
 
 # Disable this service after successful run
-systemctl disable fks-phase2.service
+systemctl disable fks_phase2.service
 
 PHASE2_SCRIPT
     
-    chmod +x /usr/local/bin/fks-phase2.sh
+    chmod +x /usr/local/bin/fks_phase2.sh
     
     # Save environment variables for phase 2
-    cat > /root/.fks-env << EOF
+    cat > /root/.fks_env << EOF
 export TAILSCALE_AUTH_KEY="${TAILSCALE_AUTH_KEY}"
 export DOCKER_USERNAME="${DOCKER_USERNAME}"
 export DOCKER_TOKEN="${DOCKER_TOKEN}"
 export NETDATA_CLAIM_TOKEN="${NETDATA_CLAIM_TOKEN}"
 export NETDATA_CLAIM_ROOM="${NETDATA_CLAIM_ROOM}"
 EOF
-    chmod 600 /root/.fks-env
+    chmod 600 /root/.fks_env
     
     # Create systemd service for Phase 2
-    cat > /etc/systemd/system/fks-phase2.service << EOF
+    cat > /etc/systemd/system/fks_phase2.service << EOF
 [Unit]
 Description=FKS Trading Systems Setup Phase 2
 After=network-online.target docker.service
@@ -1284,7 +1284,7 @@ Requires=network-online.target
 [Service]
 Type=oneshot
 ExecStartPre=/bin/sleep 10
-ExecStart=/usr/local/bin/fks-phase2.sh
+ExecStart=/usr/local/bin/fks_phase2.sh
 RemainAfterExit=yes
 StandardOutput=journal+console
 StandardError=journal+console
@@ -1293,7 +1293,7 @@ StandardError=journal+console
 WantedBy=multi-user.target
 EOF
     
-    systemctl enable fks-phase2.service
+    systemctl enable fks_phase2.service
     
     # Create GitHub Actions deployment script
     log "Creating GitHub Actions deployment script..."
@@ -1364,7 +1364,7 @@ DEPLOY_SCRIPT
     log "[TIME] Total setup time: ~6 minutes (Phase 1: ~3 min, Reboot: ~1 min, Phase 2: ~2 min)"
     log ""
     log "GitHub Actions can now retrieve SSH key from:"
-    log "  - /var/log/fks-setup.log (search for GENERATED_ACTIONS_USER_SSH_PUB)"
+    log "  - /var/log/fks_setup.log (search for GENERATED_ACTIONS_USER_SSH_PUB)"
     log "  - /home/actions_user/.ssh/public_key_for_github.txt"
     log "  - /home/actions_user/.ssh/id_ed25519.pub"
     log "============================================"

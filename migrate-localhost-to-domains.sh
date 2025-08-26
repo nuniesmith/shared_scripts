@@ -256,7 +256,7 @@ generate_summary() {
     echo "  • Monitoring:    https://monitor.${DOMAIN}"
     echo
     print_info "Next steps:"
-    echo "  1. Run ./scripts/setup-fks-domains.sh to configure DNS"
+    echo "  1. Run ./scripts/setup-fks_domains.sh to configure DNS"
     echo "  2. Update your .env file for your environment"
     echo "  3. Restart services with docker-compose up -d"
     echo "  4. Test all endpoints"

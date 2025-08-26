@@ -3,10 +3,10 @@ set -euo pipefail
 
 # verify_docker_network.sh
 # Verifies health & configuration of docker network(s) used by the stack.
-# Focus network: fks-network (default in docker-compose.yml)
+# Focus network: fks_network (default in docker-compose.yml)
 # Outputs diagnostics & exits non-zero on hard failures.
 
-TARGET_NETWORK=${1:-fks-network}
+TARGET_NETWORK=${1:-fks_network}
 RED="\033[31m"; GREEN="\033[32m"; YELLOW="\033[33m"; BOLD="\033[1m"; NC="\033[0m"
 INFO(){ echo -e "${BOLD}==>${NC} $*"; }
 PASS(){ echo -e "${GREEN}✔${NC} $*"; }

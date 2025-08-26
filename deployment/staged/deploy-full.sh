@@ -106,7 +106,7 @@ while [[ $# -gt 0 ]]; do
             JORDAN_PASSWORD="$2"
             shift 2
             ;;
-        --fks-user-password)
+        --fks_user-password)
             FKS_USER_PASSWORD="$2"
             shift 2
             ;;
@@ -146,7 +146,7 @@ while [[ $# -gt 0 ]]; do
             ACTIONS_ROOT_SSH_PUB="$2"
             shift 2
             ;;
-        --fks-user-ssh-pub)
+        --fks_user-ssh-pub)
             ACTIONS_FKS_SSH_PUB="$2"
             shift 2
             ;;
@@ -199,7 +199,7 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "User Credentials:"
             echo "  --jordan-password <pass>      Password for jordan user (REQUIRED)"
-            echo "  --fks-user-password <pass>    Password for fks_user (REQUIRED)"
+            echo "  --fks_user-password <pass>    Password for fks_user (REQUIRED)"
             echo ""
             echo "Service Configuration:"
             echo "  --tailscale-auth-key <key>    Tailscale auth key (REQUIRED for VPN)"
@@ -213,7 +213,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --jordan-ssh-pub <key>        Jordan's SSH public key"
             echo "  --actions_user-ssh-pub <key> GitHub Actions SSH public key"
             echo "  --root-ssh-pub <key>          Root SSH public key"
-            echo "  --fks-user-ssh-pub <key>      FKS User SSH public key"
+            echo "  --fks_user-ssh-pub <key>      FKS User SSH public key"
             echo ""
             echo "Execution Control:"
             echo "  --env-file <file>             Load environment from file"
@@ -229,12 +229,12 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Examples:"
             echo "  # Full deployment with new server:"
-            echo "  $0 --jordan-password mypass --fks-user-password mypass2 \\"
+            echo "  $0 --jordan-password mypass --fks_user-password mypass2 \\"
             echo "     --tailscale-auth-key tskey-xxx"
             echo ""
             echo "  # Use existing server:"
             echo "  $0 --target-server custom --custom-host 192.168.1.100 \\"
-            echo "     --jordan-password mypass --fks-user-password mypass2 \\"
+            echo "     --jordan-password mypass --fks_user-password mypass2 \\"
             echo "     --tailscale-auth-key tskey-xxx"
             echo ""
             echo "  # GitHub Actions mode (Stage 1 only, Stage 2 automatic):"
@@ -321,7 +321,7 @@ if [ "$SKIP_STAGE_1" = "false" ]; then
     fi
     
     if [ -z "$FKS_USER_PASSWORD" ]; then
-        error "FKS user password is required for Stage 1 (--fks-user-password)"
+        error "FKS user password is required for Stage 1 (--fks_user-password)"
         exit 1
     fi
     
@@ -392,7 +392,7 @@ if [ "$SKIP_STAGE_1" = "false" ]; then
     fi
     
     STAGE_1_ARGS="$STAGE_1_ARGS --jordan-password '$JORDAN_PASSWORD'"
-    STAGE_1_ARGS="$STAGE_1_ARGS --fks-user-password '$FKS_USER_PASSWORD'"
+    STAGE_1_ARGS="$STAGE_1_ARGS --fks_user-password '$FKS_USER_PASSWORD'"
     STAGE_1_ARGS="$STAGE_1_ARGS --timezone '$TIMEZONE'"
     
     if [ -n "$TAILSCALE_AUTH_KEY" ]; then
@@ -428,7 +428,7 @@ if [ "$SKIP_STAGE_1" = "false" ]; then
     fi
     
     if [ -n "$ACTIONS_FKS_SSH_PUB" ]; then
-        STAGE_1_ARGS="$STAGE_1_ARGS --fks-user-ssh-pub '$ACTIONS_FKS_SSH_PUB'"
+        STAGE_1_ARGS="$STAGE_1_ARGS --fks_user-ssh-pub '$ACTIONS_FKS_SSH_PUB'"
     fi
     
     log "Running Stage 1 setup..."
@@ -532,9 +532,9 @@ if [ "$SKIP_STAGE_1" = "false" ]; then
             # Check multiple indicators that Stage 2 completed
             if ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no jordan@"$TARGET_HOST" "
                 # Check for completion message
-                sudo journalctl -u fks-stage2.service --no-pager -n 20 | grep -q 'FKS Trading Systems Setup Complete' ||
+                sudo journalctl -u fks_stage2.service --no-pager -n 20 | grep -q 'FKS Trading Systems Setup Complete' ||
                 # Check if service finished successfully
-                systemctl is-active fks-stage2.service | grep -q 'inactive' ||
+                systemctl is-active fks_stage2.service | grep -q 'inactive' ||
                 # Check if Tailscale is configured (key Stage 2 task)
                 tailscale status >/dev/null 2>&1
             " 2>/dev/null; then
@@ -545,9 +545,9 @@ if [ "$SKIP_STAGE_1" = "false" ]; then
             
             # Show some progress info
             stage2_status=$(ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no jordan@"$TARGET_HOST" "
-                if systemctl is-active fks-stage2.service >/dev/null 2>&1; then
+                if systemctl is-active fks_stage2.service >/dev/null 2>&1; then
                     echo 'running'
-                elif systemctl status fks-stage2.service | grep -q 'inactive'; then
+                elif systemctl status fks_stage2.service | grep -q 'inactive'; then
                     echo 'finished'
                 else
                     echo 'pending'
@@ -566,10 +566,10 @@ if [ "$SKIP_STAGE_1" = "false" ]; then
             # Try to get more detailed status
             ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no jordan@"$TARGET_HOST" "
                 echo '=== Stage 2 Service Status ==='
-                sudo systemctl status fks-stage2.service --no-pager || true
+                sudo systemctl status fks_stage2.service --no-pager || true
                 echo ''
                 echo '=== Recent Stage 2 Logs ==='
-                sudo journalctl -u fks-stage2.service --no-pager -n 20 || true
+                sudo journalctl -u fks_stage2.service --no-pager -n 20 || true
                 echo ''
                 echo '=== Tailscale Status ==='
                 tailscale status || echo 'Tailscale not configured'
@@ -583,15 +583,15 @@ if [ "$SKIP_STAGE_1" = "false" ]; then
         
         # Check that Stage 2 service is enabled and ready to run
         if ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no jordan@"$TARGET_HOST" "
-            sudo systemctl is-enabled fks-stage2.service >/dev/null 2>&1
+            sudo systemctl is-enabled fks_stage2.service >/dev/null 2>&1
         " 2>/dev/null; then
             log "✅ Stage 2 systemd service is enabled and will run automatically"
             
             # Check current status
             stage2_status=$(ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no jordan@"$TARGET_HOST" "
-                if sudo systemctl is-active fks-stage2.service >/dev/null 2>&1; then
+                if sudo systemctl is-active fks_stage2.service >/dev/null 2>&1; then
                     echo 'running'
-                elif sudo systemctl status fks-stage2.service 2>/dev/null | grep -q 'Deactivated successfully'; then
+                elif sudo systemctl status fks_stage2.service 2>/dev/null | grep -q 'Deactivated successfully'; then
                     echo 'completed'
                 else
                     echo 'pending'
@@ -632,7 +632,7 @@ if [ "$SKIP_STAGE_2" = "false" ]; then
     if ! "$SCRIPT_DIR/stage-2-finalize.sh" $STAGE_2_ARGS; then
         warn "Stage 2 status check indicated issues"
         log "You may need to troubleshoot or run manual Stage 2"
-        log "Check systemd service: ssh jordan@$TARGET_HOST 'journalctl -u fks-stage2.service -f'"
+        log "Check systemd service: ssh jordan@$TARGET_HOST 'journalctl -u fks_stage2.service -f'"
         log "Or run manual Stage 2: $SCRIPT_DIR/stage-2-finalize.sh --target-host $TARGET_HOST --force-manual"
     fi
 else
@@ -668,7 +668,7 @@ if [ "$SKIP_STAGE_2" = "false" ]; then
     fi
     log ""
     log "Troubleshooting:"
-    log "  Check Stage 2 logs: ssh jordan@$TARGET_HOST 'journalctl -u fks-stage2.service -f'"
+    log "  Check Stage 2 logs: ssh jordan@$TARGET_HOST 'journalctl -u fks_stage2.service -f'"
     log "  Manual Stage 2: $SCRIPT_DIR/stage-2-finalize.sh --target-host $TARGET_HOST --force-manual"
 else
     log "STAGE 0 + STAGE 1 DEPLOYMENT COMPLETE!"
@@ -689,8 +689,8 @@ else
     log ""
     log "Monitor Stage 2 progress:"
     log "  SSH: ssh jordan@$TARGET_HOST"
-    log "  Logs: ssh jordan@$TARGET_HOST 'sudo journalctl -u fks-stage2.service -f'"
-    log "  Status: ssh jordan@$TARGET_HOST 'sudo systemctl status fks-stage2.service'"
+    log "  Logs: ssh jordan@$TARGET_HOST 'sudo journalctl -u fks_stage2.service -f'"
+    log "  Status: ssh jordan@$TARGET_HOST 'sudo systemctl status fks_stage2.service'"
     log ""
     log "After Stage 2 completes (~5-10 minutes):"
     log "1. Get Tailscale IP: ssh jordan@$TARGET_HOST 'tailscale ip'"

@@ -24,14 +24,14 @@ fi
 echo ""
 
 # Check temp location
-if [ -d "/home/actions_user/fks-temp" ]; then
-    echo "⚠️ /home/actions_user/fks-temp EXISTS (should not exist after successful deployment)"
-    echo "   Size: $(du -sh /home/actions_user/fks-temp 2>/dev/null | cut -f1)"
-    echo "   Owner: $(stat -c '%U:%G' /home/actions_user/fks-temp 2>/dev/null)"
+if [ -d "/home/actions_user/fks_temp" ]; then
+    echo "⚠️ /home/actions_user/fks_temp EXISTS (should not exist after successful deployment)"
+    echo "   Size: $(du -sh /home/actions_user/fks_temp 2>/dev/null | cut -f1)"
+    echo "   Owner: $(stat -c '%U:%G' /home/actions_user/fks_temp 2>/dev/null)"
     echo "   Contents (first 10 items):"
-    ls -la /home/actions_user/fks-temp/ 2>/dev/null | head -11
+    ls -la /home/actions_user/fks_temp/ 2>/dev/null | head -11
 else
-    echo "✅ /home/actions_user/fks-temp NOT FOUND (good - means it was moved)"
+    echo "✅ /home/actions_user/fks_temp NOT FOUND (good - means it was moved)"
 fi
 
 echo ""

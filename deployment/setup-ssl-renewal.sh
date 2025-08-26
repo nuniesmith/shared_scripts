@@ -30,7 +30,7 @@ FKS_HOME="${2:-/home/fks_user/fks}"
 log_info "Setting up SSL certificate auto-renewal for $DOMAIN_NAME"
 
 # Create renewal hook script
-cat > /etc/letsencrypt/renewal-hooks/deploy/fks-nginx-reload.sh << 'EOF'
+cat > /etc/letsencrypt/renewal-hooks/deploy/fks_nginx-reload.sh << 'EOF'
 #!/bin/bash
 # Reload nginx in the FKS container after certificate renewal
 
@@ -52,10 +52,10 @@ fi
 EOF
 
 # Make the hook script executable
-chmod +x /etc/letsencrypt/renewal-hooks/deploy/fks-nginx-reload.sh
+chmod +x /etc/letsencrypt/renewal-hooks/deploy/fks_nginx-reload.sh
 
 # Update the hook script with the correct FKS_HOME
-sed -i "s|FKS_HOME=\"\${FKS_HOME:-/home/fks_user/fks}\"|FKS_HOME=\"$FKS_HOME\"|" /etc/letsencrypt/renewal-hooks/deploy/fks-nginx-reload.sh
+sed -i "s|FKS_HOME=\"\${FKS_HOME:-/home/fks_user/fks}\"|FKS_HOME=\"$FKS_HOME\"|" /etc/letsencrypt/renewal-hooks/deploy/fks_nginx-reload.sh
 
 # Test certificate renewal (dry run)
 log_info "Testing certificate renewal (dry run)..."

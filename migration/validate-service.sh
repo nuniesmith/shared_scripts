@@ -47,8 +47,8 @@ if [[ -f pyproject.toml ]]; then
     if pytest -q >/dev/null 2>&1; then test_status="ok"; else test_status="fail"; overall=1; fi
     time_test=$(( $(ts) - start ))
   fi
-  # Functional smoke for fks-data: ensure we can add/list an ActiveAsset without external providers
-  if [[ $repo_name == fks-data ]]; then
+  # Functional smoke for fks_data: ensure we can add/list an ActiveAsset without external providers
+  if [[ $repo_name == fks_data ]]; then
     if python - <<'PY' >/dev/null 2>&1; then
 from fks_data.active_assets import ActiveAssetStore, ActiveAsset
 store = ActiveAssetStore(db_path="data/func_test.db")
@@ -60,13 +60,13 @@ PY
       then
         if [[ $test_status == skip ]]; then test_status="ok"; fi
       else
-        echo "[fks-data] functional active_assets smoke test failed" >&2
+        echo "[fks_data] functional active_assets smoke test failed" >&2
         test_status="fail"; overall=1
       fi
     fi
   fi
-  # Functional smoke for fks-engine: import and inspect service URLs
-  if [[ $repo_name == fks-engine ]]; then
+  # Functional smoke for fks_engine: import and inspect service URLs
+  if [[ $repo_name == fks_engine ]]; then
     if python - <<'PY' >/dev/null 2>&1; then
 import importlib
 m = importlib.import_module('fks_engine.main')
@@ -77,13 +77,13 @@ PY
       then
         if [[ $test_status == skip ]]; then test_status="ok"; fi
       else
-        echo "[fks-engine] functional smoke failed" >&2
+        echo "[fks_engine] functional smoke failed" >&2
         test_status="fail"; overall=1
       fi
     fi
   fi
-  # Functional smoke for fks-worker: ensure main importable
-  if [[ $repo_name == fks-worker ]]; then
+  # Functional smoke for fks_worker: ensure main importable
+  if [[ $repo_name == fks_worker ]]; then
     if python - <<'PY' >/dev/null 2>&1; then
 import importlib
 m = importlib.import_module('fks_worker.main')
@@ -93,7 +93,7 @@ PY
       then
         if [[ $test_status == skip ]]; then test_status="ok"; fi
       else
-        echo "[fks-worker] functional smoke failed" >&2
+        echo "[fks_worker] functional smoke failed" >&2
         test_status="fail"; overall=1
       fi
     fi
@@ -114,8 +114,8 @@ if [[ -f Cargo.toml ]]; then
     if cargo clippy --quiet -- -D warnings >/dev/null 2>&1; then clippy_result=ok; else clippy_result=fail; fi
     if [[ $fmt_result == ok && $clippy_result == ok ]]; then lint_status="ok"; else lint_status="fail"; overall=1; fi
   fi
-  # Additional functional check for fks-config service
-  if [[ $repo_name == fks-config ]]; then
+  # Additional functional check for fks_config service
+  if [[ $repo_name == fks_config ]]; then
     sample_cfg=config/sample.yaml
     if [[ ! -f $sample_cfg ]]; then
       mkdir -p config
@@ -130,18 +130,18 @@ YML
     fi
     if cargo run --quiet -- generate --input "$sample_cfg" --output .env.generated >/dev/null 2>&1; then
       if [[ ! -s .env.generated ]]; then
-        echo "[fks-config] .env.generated missing or empty" >&2; overall=1; test_status="fail"
+        echo "[fks_config] .env.generated missing or empty" >&2; overall=1; test_status="fail"
       fi
     else
-      echo "[fks-config] cargo run generate failed" >&2; overall=1; test_status="fail"
+      echo "[fks_config] cargo run generate failed" >&2; overall=1; test_status="fail"
     fi
     # Generate schema and ensure file produced
     if cargo run --quiet -- schema --output config.schema.json >/dev/null 2>&1; then
       if [[ ! -s config.schema.json ]]; then
-        echo "[fks-config] config.schema.json missing or empty" >&2; overall=1; test_status="fail"
+        echo "[fks_config] config.schema.json missing or empty" >&2; overall=1; test_status="fail"
       fi
     else
-      echo "[fks-config] schema generation failed" >&2; overall=1; test_status="fail"
+      echo "[fks_config] schema generation failed" >&2; overall=1; test_status="fail"
     fi
   fi
 fi
@@ -156,13 +156,13 @@ if [[ -f package.json ]]; then
     if npm test --silent >/dev/null 2>&1; then test_status="ok"; else test_status="fail"; overall=1; fi
     time_test=$(( $(ts) - start ))
   fi
-  # Functional smoke for fks-web: type-check & ensure key entrypoints exist
-  if [[ $repo_name == fks-web ]]; then
+  # Functional smoke for fks_web: type-check & ensure key entrypoints exist
+  if [[ $repo_name == fks_web ]]; then
     if [[ -f tsconfig.json ]]; then
-      if npx tsc --noEmit >/dev/null 2>&1; then :; else echo "[fks-web] type-check failed" >&2; test_status="fail"; overall=1; fi
+      if npx tsc --noEmit >/dev/null 2>&1; then :; else echo "[fks_web] type-check failed" >&2; test_status="fail"; overall=1; fi
     fi
     if [[ ! -f index.html || ! -d src ]]; then
-      echo "[fks-web] missing index.html or src directory" >&2; test_status="fail"; overall=1
+      echo "[fks_web] missing index.html or src directory" >&2; test_status="fail"; overall=1
     else
       if [[ $test_status == skip ]]; then test_status="ok"; fi
     fi
@@ -170,7 +170,7 @@ if [[ -f package.json ]]; then
     if grep -q '"dev"' package.json; then
       (npm run dev >/dev/null 2>&1 &) ; DEV_PID=$!
       sleep 2
-      if ps -p $DEV_PID >/dev/null 2>&1; then kill $DEV_PID || true; else echo "[fks-web] dev server failed to start" >&2; test_status="fail"; overall=1; fi
+      if ps -p $DEV_PID >/dev/null 2>&1; then kill $DEV_PID || true; else echo "[fks_web] dev server failed to start" >&2; test_status="fail"; overall=1; fi
     fi
   fi
 fi

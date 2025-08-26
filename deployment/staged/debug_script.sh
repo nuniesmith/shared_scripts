@@ -18,24 +18,24 @@ NC='\033[0m'
 
 # Logging functions
 log() {
-    if [ -w /var/log/fks-setup.log ] 2>/dev/null; then
-        echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks-setup.log
+    if [ -w /var/log/fks_setup.log ] 2>/dev/null; then
+        echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks_setup.log
     else
         echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}"
     fi
 }
 
 warn() {
-    if [ -w /var/log/fks-setup.log ] 2>/dev/null; then
-        echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks-setup.log
+    if [ -w /var/log/fks_setup.log ] 2>/dev/null; then
+        echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks_setup.log
     else
         echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}"
     fi
 }
 
 error() {
-    if [ -w /var/log/fks-setup.log ] 2>/dev/null; then
-        echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks-setup.log
+    if [ -w /var/log/fks_setup.log ] 2>/dev/null; then
+        echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks_setup.log
     else
         echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}"
     fi
@@ -72,7 +72,7 @@ while [[ $# -gt 0 ]]; do
             JORDAN_PASSWORD="$2"
             shift 2
             ;;
-        --fks-user-password)
+        --fks_user-password)
             FKS_USER_PASSWORD="$2"
             shift 2
             ;;
@@ -112,7 +112,7 @@ while [[ $# -gt 0 ]]; do
             ACTIONS_ROOT_SSH_PUB="$2"
             shift 2
             ;;
-        --fks-user-ssh-pub)
+        --fks_user-ssh-pub)
             ACTIONS_FKS_SSH_PUB="$2"
             shift 2
             ;;
@@ -132,7 +132,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --target-host <host>           Target server host/IP"
             echo "  --root-password <pass>         Root password for SSH (REQUIRED for remote)"
             echo "  --jordan-password <pass>       Password for jordan user"
-            echo "  --fks-user-password <pass>     Password for fks_user"
+            echo "  --fks_user-password <pass>     Password for fks_user"
             echo "  --tailscale-auth-key <key>     Tailscale auth key (REQUIRED)"
             echo "  --docker-username <user>    Docker Hub username"
             echo "  --docker-token <token>      Docker Hub access token"
@@ -142,7 +142,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --jordan-ssh-pub <key>         Jordan's SSH public key"
             echo "  --actions_user-ssh-pub <key> GitHub Actions SSH public key"
             echo "  --root-ssh-pub <key>           Root SSH public key"
-            echo "  --fks-user-ssh-pub <key>       FKS User SSH public key"
+            echo "  --fks_user-ssh-pub <key>       FKS User SSH public key"
             echo "  --env-file <file>              Load environment from file"
             echo "  --help                         Show this help message"
             exit 0
@@ -176,7 +176,7 @@ if [ -z "$JORDAN_PASSWORD" ]; then
 fi
 
 if [ -z "$FKS_USER_PASSWORD" ]; then
-    error "FKS user password is required (--fks-user-password)"
+    error "FKS user password is required (--fks_user-password)"
     exit 1
 fi
 
@@ -267,20 +267,20 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Create log file
-touch /var/log/fks-setup.log
-chmod 644 /var/log/fks-setup.log
+touch /var/log/fks_setup.log
+chmod 644 /var/log/fks_setup.log
 
 # Logging functions
 log() {
-    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 warn() {
-    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 error() {
-    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 # Detect distribution - Arch Linux only
@@ -552,7 +552,7 @@ chmod 700 /home/actions_user/.ssh
 rm -f /home/actions_user/.ssh/id_ed25519 /home/actions_user/.ssh/id_ed25519.pub
 
 # Generate Ed25519 key for GitHub repository access
-ssh-keygen -t ed25519 -f /home/actions_user/.ssh/id_ed25519 -N "" -C "actions_user@fks-$(date +%Y%m%d)"
+ssh-keygen -t ed25519 -f /home/actions_user/.ssh/id_ed25519 -N "" -C "actions_user@fks_$(date +%Y%m%d)"
 
 # Set proper ownership
 chown -R actions_user:actions_user /home/actions_user/.ssh
@@ -937,7 +937,7 @@ systemctl enable fail2ban
 
 # Create Stage 2 script (matching StackScript logic)
 log "Creating Stage 2 auto-run script..."
-cat > /usr/local/bin/fks-stage2.sh << 'STAGE2_SCRIPT'
+cat > /usr/local/bin/fks_stage2.sh << 'STAGE2_SCRIPT'
 #!/bin/bash
 
 # Exit on any error
@@ -950,30 +950,30 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 log() {
-    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 warn() {
-    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 error() {
-    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks-setup.log
+    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a /var/log/fks_setup.log
 }
 
 log "Starting FKS Trading Systems Setup - Stage 2 (Auto-run)"
 
 # Read environment variables from stage 1
-source /root/.fks-env 2>/dev/null || true
+source /root/.fks_env 2>/dev/null || true
 
-# This script is deprecated - the functionality has been moved to fks-phase2.sh
-log "Stage 2 functionality has been moved to fks-phase2.sh"
+# This script is deprecated - the functionality has been moved to fks_phase2.sh
+log "Stage 2 functionality has been moved to fks_phase2.sh"
 log "This script is a placeholder for compatibility"
 
 log "Stage 2 placeholder complete"
 STAGE2_SCRIPT
 
-chmod +x /usr/local/bin/fks-stage2.sh
+chmod +x /usr/local/bin/fks_stage2.sh
 log "Firewall will be configured in Stage 2 after reboot when kernel modules are available"
 
 # Debug: Show environment variables

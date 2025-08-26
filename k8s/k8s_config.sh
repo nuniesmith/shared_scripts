@@ -30,7 +30,7 @@ LOG_FILE=${LOG_FILE:-"$LOG_DIR/k8s_manager.log"}
 DEFAULT_IP=${DEFAULT_IP:-"100.115.54.104"}
 
 # Namespace and resource configurations
-NAMESPACE=${NAMESPACE:-"fks-development"}
+NAMESPACE=${NAMESPACE:-"fks_development"}
 MANIFESTS_DIR=${MANIFESTS_DIR:-"$K8S_BASE_PATH/manifests"}
 APPLY_SECRETS=${APPLY_SECRETS:-"false"}
 VALIDATE=${VALIDATE:-"true"}

@@ -313,7 +313,7 @@ stage_initial_setup() {
         --target-host "$TARGET_HOST" \
         --root-password "$FKS_DEV_ROOT_PASSWORD" \
         --jordan-password "$JORDAN_PASSWORD" \
-        --fks-user-password "$FKS_USER_PASSWORD" \
+        --fks_user-password "$FKS_USER_PASSWORD" \
         --tailscale-auth-key "$TAILSCALE_AUTH_KEY" \
         ${DOCKER_USERNAME:+--docker-username "$DOCKER_USERNAME"} \
         ${DOCKER_TOKEN:+--docker-token "$DOCKER_TOKEN"} \

@@ -17,7 +17,7 @@ See `../extraction-map.yml` for path and submodule mapping.
 
 ```bash
 # Dry run single service
-./migration/dry-run-extraction.sh . /tmp/fks-dry fks-api
+./migration/dry-run-extraction.sh . /tmp/fks_dry fks_api
 
 # Extract all (exclude shared) into /tmp/extracted
 ./migration/run-extraction.sh --skip-shared . /tmp/extracted yourorg
@@ -27,7 +27,7 @@ See `../extraction-map.yml` for path and submodule mapping.
 
 # Full pipeline limited to api & engine and push
 ./migration/full-migration-pipeline.sh --mono . --out /tmp/pipeline --org yourorg \
-	--only fks-api,fks-engine --parallel 4 --push
+	--only fks_api,fks_engine --parallel 4 --push
 ```
 
 ## Exit Codes (verify-split.sh)

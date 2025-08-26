@@ -3,7 +3,7 @@
 # TODO RESTORE: Installs systemd units for SSL manager (service + timer) formerly in install-ssl-systemd.sh
 set -euo pipefail
 
-SERVICE_NAME="fks-ssl-manager"
+SERVICE_NAME="fks_ssl-manager"
 UNIT_DIR="/etc/systemd/system"
 
 if [[ $EUID -ne 0 ]]; then

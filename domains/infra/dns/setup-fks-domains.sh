@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# domains/infra/dns/setup-fks-domains.sh
-# TODO RESTORE: DNS + Cloudflare + nginx config generation logic from original setup-fks-domains.sh
+# domains/infra/dns/setup-fks_domains.sh
+# TODO RESTORE: DNS + Cloudflare + nginx config generation logic from original setup-fks_domains.sh
 set -euo pipefail
 
 case ${1:-plan} in

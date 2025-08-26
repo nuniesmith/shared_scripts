@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # Fix repository location script
-# This script moves the repository from fks-temp to the correct location
+# This script moves the repository from fks_temp to the correct location
 
 set -e
 
 echo "🔧 Fixing repository location..."
 
-# Check if fks-temp exists
-if [ -d "/home/actions_user/fks-temp" ]; then
-    echo "✅ Found repository in fks-temp"
+# Check if fks_temp exists
+if [ -d "/home/actions_user/fks_temp" ]; then
+    echo "✅ Found repository in fks_temp"
     
     # Ensure fks_user home directory exists
     sudo mkdir -p /home/fks_user
@@ -19,7 +19,7 @@ if [ -d "/home/actions_user/fks-temp" ]; then
     
     # Move repository to final location
     echo "📦 Moving repository to /home/fks_user/fks..."
-    sudo mv /home/actions_user/fks-temp /home/fks_user/fks
+    sudo mv /home/actions_user/fks_temp /home/fks_user/fks
     
     # Set proper ownership and permissions
     echo "🔐 Setting proper ownership and permissions..."
@@ -48,7 +48,7 @@ elif [ -d "/home/fks_user/fks" ]; then
 else
     echo "❌ Repository not found in either location"
     echo "🔍 Checking both locations..."
-    echo "fks-temp exists: $([ -d '/home/actions_user/fks-temp' ] && echo 'YES' || echo 'NO')"
+    echo "fks_temp exists: $([ -d '/home/actions_user/fks_temp' ] && echo 'YES' || echo 'NO')"
     echo "fks exists: $([ -d '/home/fks_user/fks' ] && echo 'YES' || echo 'NO')"
     
     # Look for any fks directories

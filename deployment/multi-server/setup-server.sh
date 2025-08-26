@@ -126,7 +126,7 @@ case "$SERVER_TYPE" in
         ;;
 esac
 
-cat > /etc/systemd/system/fks-${SERVER_TYPE}.service << EOF
+cat > /etc/systemd/system/fks_${SERVER_TYPE}.service << EOF
 [Unit]
 Description=$SERVICE_DESCRIPTION
 Requires=docker.service
@@ -225,7 +225,7 @@ sysctl -p
 
 # Enable systemd service
 systemctl daemon-reload
-systemctl enable fks-${SERVER_TYPE}.service
+systemctl enable fks_${SERVER_TYPE}.service
 
 # Create health check script
 cat > /home/fks_user/health-check-${SERVER_TYPE}.sh << EOF
@@ -336,5 +336,5 @@ ufw --force enable
 
 log "INFO" "✅ FKS $SERVER_TYPE server setup completed!"
 log "INFO" "🔗 Tailscale IP: $(tailscale ip -4 2>/dev/null || echo 'Not available yet')"
-log "INFO" "🔧 Use systemctl start fks-${SERVER_TYPE} to start services"
+log "INFO" "🔧 Use systemctl start fks_${SERVER_TYPE} to start services"
 log "INFO" "🏥 Use /home/fks_user/health-check-${SERVER_TYPE}.sh for health checks"

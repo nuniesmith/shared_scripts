@@ -240,19 +240,19 @@ setup_repository() {
         
         # Clone repository
         cd /tmp
-        rm -rf fks-temp
-        git clone https://x-access-token:$GITHUB_TOKEN@github.com/nuniesmith/fks.git fks-temp
+        rm -rf fks_temp
+        git clone https://x-access-token:$GITHUB_TOKEN@github.com/nuniesmith/fks.git fks_temp
         
         # Get latest commit
-        cd fks-temp
+        cd fks_temp
         LATEST_COMMIT=\$(git rev-parse --short HEAD)
         echo \"📌 Latest commit: \$LATEST_COMMIT\"
         cd ..
         
         # Move files
-        sudo mv fks-temp/* /home/fks_user/fks/
-        sudo mv fks-temp/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
-        rm -rf fks-temp
+        sudo mv fks_temp/* /home/fks_user/fks/
+        sudo mv fks_temp/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
+        rm -rf fks_temp
         
         # Set permissions
         sudo chown -R fks_user:fks_user /home/fks_user/fks

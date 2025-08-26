@@ -143,13 +143,13 @@ main() {
         
         # Clone repository to temp location
         cd /tmp
-        rm -rf fks-fresh
-        git clone https://x-access-token:$GITHUB_TOKEN@github.com/nuniesmith/fks.git fks-fresh
+        rm -rf fks_fresh
+        git clone https://x-access-token:$GITHUB_TOKEN@github.com/nuniesmith/fks.git fks_fresh
         
         # Move files with proper ownership
-        sudo mv fks-fresh/* /home/fks_user/fks/
-        sudo mv fks-fresh/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
-        rm -rf fks-fresh
+        sudo mv fks_fresh/* /home/fks_user/fks/
+        sudo mv fks_fresh/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
+        rm -rf fks_fresh
         
         # Set proper ownership and permissions
         sudo chown -R fks_user:fks_user /home/fks_user/fks

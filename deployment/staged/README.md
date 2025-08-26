@@ -44,7 +44,7 @@ Performs initial server setup including package installation, user creation, and
 ./stage-1-initial-setup.sh \
   --target-host 192.168.1.100 \
   --jordan-password "mypassword" \
-  --fks-user-password "mypassword2" \
+  --fks_user-password "mypassword2" \
   --tailscale-auth-key "tskey-xxxxx"
 ```
 
@@ -70,7 +70,7 @@ Orchestrates all stages in sequence with automatic reboot handling.
 # Full deployment with new server
 ./deploy-full.sh \
   --jordan-password "mypass" \
-  --fks-user-password "mypass2" \
+  --fks_user-password "mypass2" \
   --tailscale-auth-key "tskey-xxxxx"
 
 # Use existing server
@@ -78,7 +78,7 @@ Orchestrates all stages in sequence with automatic reboot handling.
   --target-server custom \
   --custom-host 192.168.1.100 \
   --jordan-password "mypass" \
-  --fks-user-password "mypass2" \
+  --fks_user-password "mypass2" \
   --tailscale-auth-key "tskey-xxxxx"
 
 # Skip server creation
@@ -86,7 +86,7 @@ Orchestrates all stages in sequence with automatic reboot handling.
   --skip-stage-0 \
   --custom-host 192.168.1.100 \
   --jordan-password "mypass" \
-  --fks-user-password "mypass2"
+  --fks_user-password "mypass2"
 ```
 
 ## Environment File Support
@@ -194,7 +194,7 @@ export FKS_DEV_ROOT_PASSWORD="your_password"
 
 ./deploy-full.sh \
   --jordan-password "mypass" \
-  --fks-user-password "mypass2" \
+  --fks_user-password "mypass2" \
   --tailscale-auth-key "tskey-xxxxx"
 ```
 
@@ -204,7 +204,7 @@ export FKS_DEV_ROOT_PASSWORD="your_password"
   --skip-stage-0 \
   --custom-host 192.168.1.100 \
   --jordan-password "mypass" \
-  --fks-user-password "mypass2" \
+  --fks_user-password "mypass2" \
   --tailscale-auth-key "tskey-xxxxx"
 ```
 
@@ -217,7 +217,7 @@ export FKS_DEV_ROOT_PASSWORD="your_password"
 ./stage-1-initial-setup.sh \
   --target-host $(grep TARGET_HOST server-details.env | cut -d= -f2) \
   --jordan-password "mypass" \
-  --fks-user-password "mypass2" \
+  --fks_user-password "mypass2" \
   --tailscale-auth-key "tskey-xxxxx"
 
 # Wait for reboot, then Stage 2
@@ -282,14 +282,14 @@ After successful deployment:
 
 4. **Package installation fails**
    - Server may need more time for package databases
-   - Check `/var/log/fks-setup.log` on server
+   - Check `/var/log/fks_setup.log` on server
    - Retry individual stages
 
 ### Logs
 
 Check deployment logs on the server:
 ```bash
-sudo tail -f /var/log/fks-setup.log
+sudo tail -f /var/log/fks_setup.log
 ```
 
 ### Emergency Access

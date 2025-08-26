@@ -11,8 +11,8 @@ This directory contains the SSL certificate management system for the FKS tradin
 
 ### Systemd Units
 
-- **`fks-ssl-manager.service`** - Systemd service for SSL certificate management
-- **`fks-ssl-renewal.timer`** - Systemd timer for automatic certificate renewal
+- **`fks_ssl-manager.service`** - Systemd service for SSL certificate management
+- **`fks_ssl-renewal.timer`** - Systemd timer for automatic certificate renewal
 
 ## Features
 
@@ -54,32 +54,32 @@ sudo ./scripts/ssl/install-ssl-service.sh test
 
 ```bash
 # Install certificates manually
-sudo fks-ssl-manager.sh install
+sudo fks_ssl-manager.sh install
 
 # Check certificate status
-sudo fks-ssl-manager.sh status
+sudo fks_ssl-manager.sh status
 
 # Renew certificates manually
-sudo fks-ssl-manager.sh renew
+sudo fks_ssl-manager.sh renew
 
 # Test with staging certificates
-sudo STAGING=true fks-ssl-manager.sh install
+sudo STAGING=true fks_ssl-manager.sh install
 
 # Remove certificates and configuration
-sudo fks-ssl-manager.sh cleanup
+sudo fks_ssl-manager.sh cleanup
 ```
 
 ### Check Service Status
 
 ```bash
 # Check SSL renewal timer
-systemctl status fks-ssl-renewal.timer
+systemctl status fks_ssl-renewal.timer
 
 # Check recent renewal attempts
-journalctl -u fks-ssl-manager.service
+journalctl -u fks_ssl-manager.service
 
 # View SSL manager logs
-tail -f /var/log/fks-ssl-manager.log
+tail -f /var/log/fks_ssl-manager.log
 ```
 
 ## GitHub Actions Integration
@@ -157,18 +157,18 @@ tail -f /var/log/letsencrypt/letsencrypt.log
 sudo certbot renew --dry-run
 
 # Check timer status
-systemctl status fks-ssl-renewal.timer
+systemctl status fks_ssl-renewal.timer
 systemctl list-timers | grep fks
 
 # Check service logs
-journalctl -u fks-ssl-manager.service -f
+journalctl -u fks_ssl-manager.service -f
 ```
 
 ### Rate Limit Errors
 
 ```bash
 # Use staging environment
-sudo STAGING=true fks-ssl-manager.sh install
+sudo STAGING=true fks_ssl-manager.sh install
 
 # Wait for rate limit reset (usually 1 hour to 1 week)
 # Check Let's Encrypt status page
@@ -176,11 +176,11 @@ sudo STAGING=true fks-ssl-manager.sh install
 
 ## File Locations
 
-- **Scripts**: `/usr/local/bin/fks-ssl-manager.sh`
-- **Systemd units**: `/etc/systemd/system/fks-ssl-*`
+- **Scripts**: `/usr/local/bin/fks_ssl-manager.sh`
+- **Systemd units**: `/etc/systemd/system/fks_ssl-*`
 - **Certificates**: `/etc/letsencrypt/live/fkstrading.xyz/`
-- **Nginx config**: `/etc/nginx/conf.d/fks-ssl*.conf`
-- **Logs**: `/var/log/fks-ssl-manager.log`
+- **Nginx config**: `/etc/nginx/conf.d/fks_ssl*.conf`
+- **Logs**: `/var/log/fks_ssl-manager.log`
 - **Webroot**: `/var/www/html`
 
 ## Cleanup
@@ -199,16 +199,16 @@ Manual cleanup:
 sudo ./scripts/ssl/install-ssl-service.sh uninstall
 
 # Or use the SSL manager directly
-sudo fks-ssl-manager.sh cleanup
+sudo fks_ssl-manager.sh cleanup
 ```
 
 ## Logs and Monitoring
 
 ### Log Files
 
-- `/var/log/fks-ssl-manager.log` - SSL manager operations
+- `/var/log/fks_ssl-manager.log` - SSL manager operations
 - `/var/log/letsencrypt/letsencrypt.log` - Let's Encrypt operations
-- `journalctl -u fks-ssl-manager.service` - Systemd service logs
+- `journalctl -u fks_ssl-manager.service` - Systemd service logs
 
 ### Monitoring
 
@@ -216,7 +216,7 @@ The SSL service provides status checking:
 
 ```bash
 # Quick status
-fks-ssl-manager.sh status
+fks_ssl-manager.sh status
 
 # Detailed certificate info
 openssl x509 -in /etc/letsencrypt/live/fkstrading.xyz/cert.pem -text -noout

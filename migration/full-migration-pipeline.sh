@@ -4,7 +4,7 @@
 #   --mono /path/to/mono \
 #   --out /tmp/extracted \
 #   --org yourorg \
-#   [--only fks-api,fks-engine] [--skip-shared] [--parallel 4] [--push] [--remote-prefix git@github.com:yourorg]
+#   [--only fks_api,fks_engine] [--skip-shared] [--parallel 4] [--push] [--remote-prefix git@github.com:yourorg]
 # Environment overrides:
 #   PUSH_BRANCH (default: main)
 #   VERIFY_PARALLEL (if --parallel omitted)

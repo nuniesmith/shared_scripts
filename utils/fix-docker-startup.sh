@@ -101,7 +101,7 @@ fi
 
 # Test Docker networking
 log "Testing Docker networking..."
-test_network="fks-test-fix-$$"
+test_network="fks_test-fix-$$"
 if docker network create "$test_network" >/dev/null 2>&1; then
     log "✅ Docker network creation test: PASSED"
     docker network rm "$test_network" >/dev/null 2>&1

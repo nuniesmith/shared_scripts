@@ -22,7 +22,7 @@ APP_DIR="${APP_DIR:-/app}"
 CONFIG_DIR="${CONFIG_DIR:-${APP_DIR}/config}"
 BUILD_TYPE="${BUILD_TYPE:-cpu}"
 SERVICE_TYPE="${SERVICE_TYPE:-node}"
-SERVICE_NAME="${SERVICE_NAME:-fks-${SERVICE_TYPE}}"
+SERVICE_NAME="${SERVICE_NAME:-fks_${SERVICE_TYPE}}"
 SERVICE_PORT="${SERVICE_PORT:-9000}"
 APP_ENV="${APP_ENV:-development}"
 APP_LOG_LEVEL="${APP_LOG_LEVEL:-INFO}"
@@ -160,7 +160,7 @@ case "$SERVICE_TYPE" in
         BINARY_PATHS=(
             "/app/bin/network/trading-node"
             "/app/bin/network/${SERVICE_TYPE}"
-            "/app/bin/network/fks-${SERVICE_TYPE}"
+            "/app/bin/network/fks_${SERVICE_TYPE}"
             "/app/bin/${SERVICE_TYPE}"
         )
         ;;
@@ -168,7 +168,7 @@ case "$SERVICE_TYPE" in
         BINARY_PATHS=(
             "/app/bin/execution/trading-execution"
             "/app/bin/execution/${SERVICE_TYPE}"
-            "/app/bin/execution/fks-${SERVICE_TYPE}"
+            "/app/bin/execution/fks_${SERVICE_TYPE}"
             "/app/bin/${SERVICE_TYPE}"
         )
         ;;
@@ -176,7 +176,7 @@ case "$SERVICE_TYPE" in
         BINARY_PATHS=(
             "/app/bin/connector/network-connector"
             "/app/bin/connector/${SERVICE_TYPE}"
-            "/app/bin/connector/fks-${SERVICE_TYPE}"
+            "/app/bin/connector/fks_${SERVICE_TYPE}"
             "/app/bin/network/${SERVICE_TYPE}"
             "/app/bin/${SERVICE_TYPE}"
         )
@@ -187,7 +187,7 @@ case "$SERVICE_TYPE" in
             "/app/bin/network/${SERVICE_TYPE}"
             "/app/bin/execution/${SERVICE_TYPE}"
             "/app/bin/connector/${SERVICE_TYPE}"
-            "/app/bin/fks-${SERVICE_TYPE}"
+            "/app/bin/fks_${SERVICE_TYPE}"
         )
         ;;
 esac

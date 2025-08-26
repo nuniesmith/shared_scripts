@@ -233,7 +233,7 @@ main() {
         # Clean up any existing directories
         echo '🧹 Cleaning up existing directories...'
         sudo rm -rf /home/fks_user/fks
-        sudo rm -rf /home/actions_user/fks-temp 2>/dev/null || true
+        sudo rm -rf /home/actions_user/fks_temp 2>/dev/null || true
         
         # Create proper directory structure
         echo '📁 Creating proper directory structure...'
@@ -257,14 +257,14 @@ main() {
             
             # Clone using GitHub token
             echo '🔄 Cloning repository...'
-            if git clone https://x-access-token:\\$GITHUB_TOKEN@github.com/nuniesmith/fks.git fks-fresh; then
+            if git clone https://x-access-token:\\$GITHUB_TOKEN@github.com/nuniesmith/fks.git fks_fresh; then
                 echo '✅ Repository cloned successfully'
                 
                 # Move to correct location
                 echo '📁 Moving to /home/fks_user/fks...'
-                sudo mv fks-fresh/* /home/fks_user/fks/
-                sudo mv fks-fresh/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
-                sudo rm -rf fks-fresh
+                sudo mv fks_fresh/* /home/fks_user/fks/
+                sudo mv fks_fresh/.[^.]* /home/fks_user/fks/ 2>/dev/null || true
+                sudo rm -rf fks_fresh
                 
                 # Fix ownership and permissions
                 echo '🔐 Setting proper ownership and permissions...'
@@ -658,8 +658,8 @@ ENVEOF\\\"
             echo \"🧹 Cleaning up Docker networks...\"
             docker network prune -f || true
             
-            # Remove the fks-network if it exists
-            docker network rm fks-network 2>/dev/null || true
+            # Remove the fks_network if it exists
+            docker network rm fks_network 2>/dev/null || true
             
             # Choose compose file based on environment
             if [ \"$APP_ENV\" = \"development\" ] && [ -f docker-compose.dev.yml ]; then

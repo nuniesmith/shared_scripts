@@ -83,7 +83,7 @@ done
 log "Starting FKS Trading Systems - Stage 0: Server Creation + SSH Setup"
 
 # Get server label from environment variable or use default
-SERVER_LABEL="${LINODE_SERVER_LABEL:-fks-dev}"
+SERVER_LABEL="${LINODE_SERVER_LABEL:-fks_dev}"
 log "Using server label: $SERVER_LABEL"
 
 # Validate required environment variables
@@ -318,7 +318,7 @@ generate_user_ssh_key() {
     rm -f "$home_dir/.ssh/id_ed25519"*
     
     # Generate new Ed25519 key
-    ssh-keygen -t ed25519 -f "$home_dir/.ssh/id_ed25519" -N "" -C "$username@fks-$(date +%Y%m%d)"
+    ssh-keygen -t ed25519 -f "$home_dir/.ssh/id_ed25519" -N "" -C "$username@fks_$(date +%Y%m%d)"
     
     # Set proper permissions
     chmod 600 "$home_dir/.ssh/id_ed25519"
@@ -613,7 +613,7 @@ if [ "$IS_NEW_SERVER" = "true" ]; then
     fi
     
     # Get server label from environment variable or use default
-    SERVER_LABEL="${LINODE_SERVER_LABEL:-fks-dev}"
+    SERVER_LABEL="${LINODE_SERVER_LABEL:-fks_dev}"
     
     # Create server command - start without SSH keys for reliability
     CREATE_CMD="linode-cli linodes create \

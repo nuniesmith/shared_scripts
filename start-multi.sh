@@ -37,8 +37,8 @@ log() {
 # =================================================================
 detect_environment() {
     # Check for server type markers
-    if [ -f "/etc/fks-server-type" ]; then
-        cat /etc/fks-server-type
+    if [ -f "/etc/fks_server-type" ]; then
+        cat /etc/fks_server-type
         return
     fi
     

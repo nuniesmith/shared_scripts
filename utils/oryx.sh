@@ -402,7 +402,7 @@ EOF
 create_systemd_service() {
     log_info "Creating systemd service..."
     
-    sudo tee /etc/systemd/system/fks-trading.service > /dev/null <<EOF
+    sudo tee /etc/systemd/system/fks_trading.service > /dev/null <<EOF
 [Unit]
 Description=FKS Trading Systems
 Requires=docker.service
@@ -423,7 +423,7 @@ WantedBy=multi-user.target
 EOF
     
     sudo systemctl daemon-reload
-    log_info "Systemd service created. Use 'sudo systemctl enable fks-trading' to enable auto-start."
+    log_info "Systemd service created. Use 'sudo systemctl enable fks_trading' to enable auto-start."
 }
 
 # Main setup function
@@ -452,7 +452,7 @@ main() {
     echo "- Monitor: $PROJECT_PATH/monitor.sh"
     echo "- Update: $PROJECT_PATH/update.sh"
     echo "- Cleanup: $PROJECT_PATH/cleanup.sh"
-    echo "- Enable auto-start: sudo systemctl enable fks-trading"
+    echo "- Enable auto-start: sudo systemctl enable fks_trading"
     echo ""
     
     # Check if user needs to re-login for docker group

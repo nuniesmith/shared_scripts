@@ -20,7 +20,7 @@ LOGS_DIR="$PROJECT_ROOT/logs"
 TEMP_DIR="/tmp"
 DEPLOYMENT_DIR="$PROJECT_ROOT/deployment"
 CONDA_HOME_DIR="$PROJECT_ROOT/.conda"
-CONDA_ENV_PREFIX="$CONDA_HOME_DIR/fks-dev"
+CONDA_ENV_PREFIX="$CONDA_HOME_DIR/fks_dev"
 
 # Docker Hub Configuration
 DOCKER_HUB_USERNAME="${DOCKER_HUB_USERNAME:-nuniesmith}"
@@ -1986,7 +1986,7 @@ ${YELLOW}SYSTEM COMMANDS:${NC}
   health                        Run health check
   setup                         Setup system directories and scripts
   update                        Update requirements and rebuild
-    conda-setup                   Create local conda env in ./.conda/fks-dev and install dev deps
+    conda-setup                   Create local conda env in ./.conda/fks_dev and install dev deps
     conda-install [req.txt]       Install requirements into the local conda env
     conda-info                    Show info about the local conda env
   init                          Initialize system (first-time setup)

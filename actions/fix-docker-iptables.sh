@@ -138,9 +138,9 @@ fix_service_networks() {
     # Remove potentially corrupted service networks
     SERVICE_NETWORKS=(
         "nginx_nginx-network" 
-        "fks-api-network" 
-        "fks-web-network" 
-        "fks-auth-network"
+        "fks_api-network" 
+        "fks_web-network" 
+        "fks_auth-network"
         "ats_ats-network"
     )
     

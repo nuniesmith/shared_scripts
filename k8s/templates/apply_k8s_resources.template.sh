@@ -9,7 +9,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 # Define the namespace (can be overridden by environment variable)
-NAMESPACE=${NAMESPACE:-"fks-development"}
+NAMESPACE=${NAMESPACE:-"fks_development"}
 MANIFESTS_DIR=${MANIFESTS_DIR:-"manifests"}
 APPLY_SECRETS=${APPLY_SECRETS:-"false"}
 VALIDATE=${VALIDATE:-"true"}
@@ -350,7 +350,7 @@ show_usage() {
     echo "  -h, --help                  Show this help message"
     echo ""
     echo "Examples:"
-    echo "  $0 --namespace fks-production"
+    echo "  $0 --namespace fks_production"
     echo "  $0 --keep-namespace --only configmaps,services"
     exit 0
 }

@@ -751,9 +751,9 @@ generate_docker_compose_file() {
 
 
 services:
-  fks-app:
+  fks_app:
     build: .
-    container_name: fks-app
+    container_name: fks_app
     environment:
       - FKS_MODE=server
       - FKS_DEBUG=false
@@ -765,12 +765,12 @@ services:
       - "8000:8000"
     restart: unless-stopped
     depends_on:
-      - fks-db
-      - fks-redis
+      - fks_db
+      - fks_redis
 
-  fks-db:
+  fks_db:
     image: postgres:13-alpine
-    container_name: fks-db
+    container_name: fks_db
     environment:
       - POSTGRES_DB=fks
       - POSTGRES_USER=fks_user
@@ -781,9 +781,9 @@ services:
       - "5432:5432"
     restart: unless-stopped
 
-  fks-redis:
+  fks_redis:
     image: redis:7-alpine
-    container_name: fks-redis
+    container_name: fks_redis
     volumes:
       - fks_redis_data:/data
     ports:

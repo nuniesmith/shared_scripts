@@ -65,7 +65,7 @@ main() {
         # Create a proper development .env file
         sudo -u fks_user bash -c 'cat > .env << \"DEVENV\"
 # FKS Trading Systems - Development Configuration
-# Fixed configuration for fks-dev server
+# Fixed configuration for fks_dev server
 
 # Environment
 APP_ENV=development

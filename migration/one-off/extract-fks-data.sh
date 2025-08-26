@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# One-off extraction script for fks-data Python data service.
+# One-off extraction script for fks_data Python data service.
 # Filters history to fks_data/, flattens, adds shared submodules (python, schema, scripts, docker, actions),
 # scaffolds CI, runs a functional smoke test (ActiveAssetStore), and generates an SBOM.
-# Usage: ./migration/one-off/extract-fks-data.sh <mono-root> <out-base> [--org yourorg] [--remote git@github.com:org/fks-data.git]
+# Usage: ./migration/one-off/extract-fks_data.sh <mono-root> <out-base> [--org yourorg] [--remote git@github.com:org/fks_data.git]
 set -euo pipefail
 MONO_ROOT=${1:-}
 OUT_BASE=${2:-}
@@ -19,7 +19,7 @@ done
 [[ -z $MONO_ROOT || -z $OUT_BASE ]] && echo "Usage: $0 <mono-root> <out-base> [--org org] [--remote url]" >&2 && exit 1
 [[ ! -d $MONO_ROOT/.git ]] && echo "Monorepo root invalid" >&2 && exit 1
 command -v git-filter-repo >/dev/null || { echo "git-filter-repo not installed" >&2; exit 1; }
-SERVICE=fks-data
+SERVICE=fks_data
 WORK="$OUT_BASE/$SERVICE"
 rm -rf "$WORK"
 mkdir -p "$OUT_BASE"
@@ -52,14 +52,14 @@ if [[ -d "$MONO_ROOT/fks_data/tests" ]]; then
 fi
 
 echo "[STEP] Add submodules" >&2
-declare -A MAPSUB=( [python]=fks-shared-python [schema]=fks-shared-schema [scripts]=fks-shared-scripts [docker]=fks-shared-docker [actions]=fks-shared-actions )
+declare -A MAPSUB=( [python]=shared_python [schema]=shared_schema [scripts]=shared_scripts [docker]=shared_docker [actions]=shared_actions )
 for s in python schema scripts docker actions; do
   repo="${MAPSUB[$s]}"; url="git@github.com:$ORG/$repo.git"; git submodule add -f "$url" "shared/$s" || true; done
 
 # Import rewrites
 if grep -RIl '^from fks_shared\.' src >/dev/null 2>&1; then
   grep -RIl '^from fks_shared\.' src | while read -r f; do
-    sed -i "s/^from fks_shared\./from fks_shared_python./" "$f" || true
+    sed -i "s/^from fks_shared\./from shared_python./" "$f" || true
   done
 fi
 
@@ -71,7 +71,7 @@ if [[ ! -f README.md ]]; then
   sed -e "s/{{REPO_NAME}}/$SERVICE/g" -e "s/{{DESCRIPTION}}/Python data acquisition & caching service/" -e "s/{{ORG}}/$ORG/" "$TEMPLATES/README.md.tpl" > README.md
 fi
 if [[ ! -f docs/architecture.md ]]; then
-  sed -e "s/{{INTERNAL_DEPS}}/shared-python, shared-schema/" -e "s/{{SHARED_MODULES}}/python schema scripts docker actions/" "$TEMPLATES/architecture.md.tpl" > docs/architecture.md
+  sed -e "s/{{INTERNAL_DEPS}}/shared_python, shared_schema/" -e "s/{{SHARED_MODULES}}/python schema scripts docker actions/" "$TEMPLATES/architecture.md.tpl" > docs/architecture.md
 fi
 sed -e "s/{{REPO_NAME}}/$SERVICE/g" "$TEMPLATES/Makefile.tpl" > Makefile
 cp "$TEMPLATES/update-submodules.sh" ./update-submodules.sh; chmod +x update-submodules.sh

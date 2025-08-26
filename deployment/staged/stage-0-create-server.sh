@@ -360,7 +360,7 @@ if [ "$IS_NEW_SERVER" = "true" ]; then
     
     # Create the server with better error handling
     NEW_INSTANCE=$(linode-cli linodes create \
-        --label "fks-dev" \
+        --label "fks_dev" \
         --image "$SERVER_IMAGE" \
         --region "$SERVER_REGION" \
         --type "$SERVER_TYPE" \

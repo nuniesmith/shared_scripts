@@ -16,7 +16,7 @@ K8S_BASE_PATH=${K8S_BASE_PATH:-"$BASE_DIR/deployment/k8s"}
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 # Namespace and resource configurations
-NAMESPACE=${NAMESPACE:-"fks-development"}
+NAMESPACE=${NAMESPACE:-"fks_development"}
 MANIFESTS_DIR=${MANIFESTS_DIR:-"$K8S_BASE_PATH/manifests"}
 APPLY_SECRETS=${APPLY_SECRETS:-"false"}
 VALIDATE=${VALIDATE:-"true"}
@@ -553,8 +553,8 @@ show_usage() {
     echo "  SPECIFIC_RESOURCES          Only apply specific resources (comma-separated)"
     echo ""
     echo "Examples:"
-    echo "  $0 --namespace fks-production"
-    echo "  NAMESPACE=fks-staging $0"
+    echo "  $0 --namespace fks_production"
+    echo "  NAMESPACE=fks_staging $0"
     echo "  $0 --resource configmap,secret,service"
     echo "  $0 --only deployments,services"
     echo "  $0 --keep-namespace --only configmaps"

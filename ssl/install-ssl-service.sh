@@ -34,10 +34,10 @@ install_ssl_script() {
     log "${BLUE}📦 Installing SSL management script...${NC}"
     
     # Copy the SSL manager script
-    cp "$(dirname "$0")/../ssl/manage-ssl-certs.sh" "/usr/local/bin/fks-ssl-manager.sh"
-    chmod +x "/usr/local/bin/fks-ssl-manager.sh"
+    cp "$(dirname "$0")/../ssl/manage-ssl-certs.sh" "/usr/local/bin/fks_ssl-manager.sh"
+    chmod +x "/usr/local/bin/fks_ssl-manager.sh"
     
-    log "${GREEN}✅ SSL management script installed to /usr/local/bin/fks-ssl-manager.sh${NC}"
+    log "${GREEN}✅ SSL management script installed to /usr/local/bin/fks_ssl-manager.sh${NC}"
 }
 
 # Install systemd service and timer
@@ -45,13 +45,13 @@ install_systemd_units() {
     log "${BLUE}⚙️ Installing systemd service and timer...${NC}"
     
     # Copy systemd units
-    cp "$(dirname "$0")/../config/systemd/fks-ssl-manager.service" "/etc/systemd/system/"
-    cp "$(dirname "$0")/../config/systemd/fks-ssl-renewal.timer" "/etc/systemd/system/"
+    cp "$(dirname "$0")/../config/systemd/fks_ssl-manager.service" "/etc/systemd/system/"
+    cp "$(dirname "$0")/../config/systemd/fks_ssl-renewal.timer" "/etc/systemd/system/"
     
     # Update environment variables in service file
-    sed -i "s/Environment=DOMAIN=.*/Environment=DOMAIN=$DOMAIN/" "/etc/systemd/system/fks-ssl-manager.service"
-    sed -i "s/Environment=LETSENCRYPT_EMAIL=.*/Environment=LETSENCRYPT_EMAIL=$EMAIL/" "/etc/systemd/system/fks-ssl-manager.service"
-    sed -i "s/Environment=STAGING=.*/Environment=STAGING=$STAGING/" "/etc/systemd/system/fks-ssl-manager.service"
+    sed -i "s/Environment=DOMAIN=.*/Environment=DOMAIN=$DOMAIN/" "/etc/systemd/system/fks_ssl-manager.service"
+    sed -i "s/Environment=LETSENCRYPT_EMAIL=.*/Environment=LETSENCRYPT_EMAIL=$EMAIL/" "/etc/systemd/system/fks_ssl-manager.service"
+    sed -i "s/Environment=STAGING=.*/Environment=STAGING=$STAGING/" "/etc/systemd/system/fks_ssl-manager.service"
     
     # Reload systemd
     systemctl daemon-reload
@@ -64,13 +64,13 @@ enable_services() {
     log "${BLUE}🚀 Enabling and starting SSL services...${NC}"
     
     # Enable and start the timer (this will handle automatic renewals)
-    systemctl enable fks-ssl-renewal.timer
-    systemctl start fks-ssl-renewal.timer
+    systemctl enable fks_ssl-renewal.timer
+    systemctl start fks_ssl-renewal.timer
     
     log "${GREEN}✅ SSL renewal timer enabled and started${NC}"
     
     # Show timer status
-    systemctl status fks-ssl-renewal.timer --no-pager -l || true
+    systemctl status fks_ssl-renewal.timer --no-pager -l || true
 }
 
 # Run the initial SSL setup
@@ -82,7 +82,7 @@ run_initial_setup() {
     fi
     
     # Run the SSL manager to install certificates
-    if /usr/local/bin/fks-ssl-manager.sh install; then
+    if /usr/local/bin/fks_ssl-manager.sh install; then
         log "${GREEN}✅ Initial SSL setup completed successfully!${NC}"
         return 0
     else
@@ -96,21 +96,21 @@ cleanup_ssl_service() {
     log "${BLUE}🧹 Removing SSL service and certificates...${NC}"
     
     # Stop and disable timer
-    systemctl stop fks-ssl-renewal.timer 2>/dev/null || true
-    systemctl disable fks-ssl-renewal.timer 2>/dev/null || true
+    systemctl stop fks_ssl-renewal.timer 2>/dev/null || true
+    systemctl disable fks_ssl-renewal.timer 2>/dev/null || true
     
     # Remove systemd units
-    rm -f "/etc/systemd/system/fks-ssl-manager.service"
-    rm -f "/etc/systemd/system/fks-ssl-renewal.timer"
+    rm -f "/etc/systemd/system/fks_ssl-manager.service"
+    rm -f "/etc/systemd/system/fks_ssl-renewal.timer"
     
     # Reload systemd
     systemctl daemon-reload
     
     # Clean up SSL certificates
-    /usr/local/bin/fks-ssl-manager.sh cleanup 2>/dev/null || true
+    /usr/local/bin/fks_ssl-manager.sh cleanup 2>/dev/null || true
     
     # Remove SSL manager script
-    rm -f "/usr/local/bin/fks-ssl-manager.sh"
+    rm -f "/usr/local/bin/fks_ssl-manager.sh"
     
     log "${GREEN}✅ SSL service cleanup completed${NC}"
 }
@@ -120,16 +120,16 @@ check_status() {
     log "${BLUE}📊 SSL Service Status:${NC}"
     
     # Check timer status
-    if systemctl is-active fks-ssl-renewal.timer >/dev/null 2>&1; then
+    if systemctl is-active fks_ssl-renewal.timer >/dev/null 2>&1; then
         log "${GREEN}✅ SSL renewal timer is active${NC}"
-        systemctl status fks-ssl-renewal.timer --no-pager -l || true
+        systemctl status fks_ssl-renewal.timer --no-pager -l || true
     else
         log "${RED}❌ SSL renewal timer is not active${NC}"
     fi
     
     # Check certificate status
-    if [ -f "/usr/local/bin/fks-ssl-manager.sh" ]; then
-        /usr/local/bin/fks-ssl-manager.sh status || true
+    if [ -f "/usr/local/bin/fks_ssl-manager.sh" ]; then
+        /usr/local/bin/fks_ssl-manager.sh status || true
     else
         log "${RED}❌ SSL manager script not found${NC}"
     fi

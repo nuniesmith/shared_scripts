@@ -18,7 +18,7 @@ fi
 echo "🔍 Current situation analysis:"
 echo "  - /home/fks_user/fks exists: $([ -d '/home/fks_user/fks' ] && echo 'YES' || echo 'NO')"
 echo "  - /home/fks_user/fks owner: $([ -d '/home/fks_user/fks' ] && stat -c '%U:%G' /home/fks_user/fks || echo 'N/A')"
-echo "  - /home/actions_user/fks-temp exists: $([ -d '/home/actions_user/fks-temp' ] && echo 'YES' || echo 'NO')"
+echo "  - /home/actions_user/fks_temp exists: $([ -d '/home/actions_user/fks_temp' ] && echo 'YES' || echo 'NO')"
 
 # Function to search for the repository
 find_repository() {
@@ -136,7 +136,7 @@ if [ ! -d "/home/fks_user/fks" ] || [ ! -f "/home/fks_user/fks/docker-compose.ym
     
     # Try to clone the repository
     cd /tmp
-    if git clone https://github.com/nuniesmith/fks.git fks-clone 2>/dev/null; then
+    if git clone https://github.com/nuniesmith/fks.git fks_clone 2>/dev/null; then
         echo "✅ Repository cloned successfully"
         
         # Move to correct location
@@ -144,7 +144,7 @@ if [ ! -d "/home/fks_user/fks" ] || [ ! -f "/home/fks_user/fks/docker-compose.ym
             rm -rf /home/fks_user/fks
         fi
         
-        mv fks-clone /home/fks_user/fks
+        mv fks_clone /home/fks_user/fks
         
         # Fix ownership and permissions
         chown -R fks_user:fks_user /home/fks_user/fks

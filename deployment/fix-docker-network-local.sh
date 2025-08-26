@@ -41,8 +41,8 @@ fix_local_docker_network() {
     docker-compose down || true
     
     # Remove the problematic network
-    log "🌐 Removing fks-network..."
-    docker network rm fks-network 2>/dev/null || true
+    log "🌐 Removing fks_network..."
+    docker network rm fks_network 2>/dev/null || true
     
     # Prune unused networks
     log "🧹 Pruning unused networks..."

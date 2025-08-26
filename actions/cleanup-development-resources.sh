@@ -75,9 +75,9 @@ cleanup_tailscale() {
     
     if [[ "$pattern" == "all" ]]; then
         # Clean all development services
-        DEVICE_PATTERNS=("fks-auth" "fks-api" "fks-web" "nginx" "ats")
+        DEVICE_PATTERNS=("fks_auth" "fks_api" "fks_web" "nginx" "ats")
     elif [[ "$pattern" == "fks" ]]; then
-        DEVICE_PATTERNS=("fks-auth" "fks-api" "fks-web")
+        DEVICE_PATTERNS=("fks_auth" "fks_api" "fks_web")
     else
         DEVICE_PATTERNS=("$pattern")
     fi
@@ -135,9 +135,9 @@ token = $LINODE_CLI_TOKEN" > ~/.linode-cli
     
     if [[ "$pattern" == "all" ]]; then
         # Clean all development services
-        SERVER_PATTERNS=("fks-auth" "fks-api" "fks-web" "nginx" "ats")
+        SERVER_PATTERNS=("fks_auth" "fks_api" "fks_web" "nginx" "ats")
     elif [[ "$pattern" == "fks" ]]; then
-        SERVER_PATTERNS=("fks-auth" "fks-api" "fks-web")
+        SERVER_PATTERNS=("fks_auth" "fks_api" "fks_web")
     else
         SERVER_PATTERNS=("$pattern")
     fi

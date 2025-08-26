@@ -13,7 +13,7 @@ MAGENTA='\033[0;35m'
 NC='\033[0m' # No Color
 
 # Configuration
-KEY_DIR="./fks-ssh-keys"
+KEY_DIR="./fks_ssh-keys"
 KEY_TYPE="ed25519"  # More secure and shorter than RSA
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
@@ -47,10 +47,10 @@ generate_key_pair() {
     rm -f "$key_path/id_rsa" "$key_path/id_rsa.pub"
     
     # Generate key pair
-    ssh-keygen -t $KEY_TYPE -f "$key_path/id_${KEY_TYPE}" -N "" -C "${user}@fks-${TIMESTAMP}" >/dev/null 2>&1
+    ssh-keygen -t $KEY_TYPE -f "$key_path/id_${KEY_TYPE}" -N "" -C "${user}@fks_${TIMESTAMP}" >/dev/null 2>&1
     
     # Also generate an RSA key for compatibility
-    ssh-keygen -t rsa -b 4096 -f "$key_path/id_rsa" -N "" -C "${user}@fks-${TIMESTAMP}" >/dev/null 2>&1
+    ssh-keygen -t rsa -b 4096 -f "$key_path/id_rsa" -N "" -C "${user}@fks_${TIMESTAMP}" >/dev/null 2>&1
     
     # Set proper permissions
     chmod 600 "$key_path/id_${KEY_TYPE}" "$key_path/id_rsa"
@@ -261,20 +261,20 @@ Host target-server
 To SSH into the server from your local machine, add this to `~/.ssh/config`:
 
 ```
-Host fks-dev
+Host fks_dev
     HostName fks.tailfef10.ts.net
     User jordan
-    IdentityFile ~/path/to/fks-ssh-keys/jordan/id_ed25519
+    IdentityFile ~/path/to/fks_ssh-keys/jordan/id_ed25519
     
-Host fks-dev-root
+Host fks_dev-root
     HostName fks.tailfef10.ts.net
     User root
-    IdentityFile ~/path/to/fks-ssh-keys/root/id_ed25519
+    IdentityFile ~/path/to/fks_ssh-keys/root/id_ed25519
 
-Host fks-dev-github
+Host fks_dev-github
     HostName fks.tailfef10.ts.net
     User github_actions
-    IdentityFile ~/path/to/fks-ssh-keys/github_actions/id_ed25519
+    IdentityFile ~/path/to/fks_ssh-keys/github_actions/id_ed25519
 ```
 
 ## 5. Testing
@@ -282,9 +282,9 @@ Host fks-dev-github
 Test each connection:
 
 ```bash
-ssh fks-dev "echo 'Jordan user works'"
-ssh fks-dev-github "echo 'GitHub Actions user works'"
-ssh fks-dev-root "echo 'Root user works'"
+ssh fks_dev "echo 'Jordan user works'"
+ssh fks_dev-github "echo 'GitHub Actions user works'"
+ssh fks_dev-root "echo 'Root user works'"
 ```
 
 ## Security Notes

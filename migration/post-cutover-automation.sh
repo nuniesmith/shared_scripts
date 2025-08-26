@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Post-cutover automation: tag/archive monorepo, update cross-links, run integration compose test, verify submodules.
 # Usage: ./migration/post-cutover-automation.sh --mono-root . --micro-root ./_out --org yourorg \
-#          --infra-repo fks-infra --compose-file docker-compose.yml --tag cutover-2025-08-22 \
+#          --infra-repo fks_infra --compose-file docker-compose.yml --tag cutover-2025-08-22 \
 #          [--archive] [--push-tags] [--dry-run]
 set -euo pipefail
 
-MONO_ROOT=""; MICRO_ROOT=""; ORG=""; INFRA_REPO="fks-infra"; COMPOSE_FILE="docker-compose.yml"; TAG=""; ARCHIVE=0; PUSH_TAGS=0; DRY=0
+MONO_ROOT=""; MICRO_ROOT=""; ORG=""; INFRA_REPO="fks_infra"; COMPOSE_FILE="docker-compose.yml"; TAG=""; ARCHIVE=0; PUSH_TAGS=0; DRY=0
 
 while [[ $# -gt 0 ]]; do
   case $1 in

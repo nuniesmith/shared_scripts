@@ -16,7 +16,7 @@ The main template that provides common functionality for all services:
 ### Service-Specific Templates
 - `nginx-start.sh` - Nginx Reverse Proxy configuration
 - `ats-start.sh` - ATS Game Server configuration  
-- `fks-start.sh` - FKS Trading System configuration
+- `fks_start.sh` - FKS Trading System configuration
 
 ## Usage in Service Repositories
 

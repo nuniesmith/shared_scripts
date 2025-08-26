@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# One-off extraction script for fks-ninja (C# / NinjaTrader integration)
-# Usage: ./migration/one-off/extract-fks-ninja.sh <mono-root> <out-base> [--org yourorg] [--remote git@github.com:org/fks-ninja.git]
+# One-off extraction script for fks_ninja (C# / NinjaTrader integration)
+# Usage: ./migration/one-off/extract-fks_ninja.sh <mono-root> <out-base> [--org yourorg] [--remote git@github.com:org/fks_ninja.git]
 set -euo pipefail
 MONO_ROOT=${1:-}
 OUT_BASE=${2:-}
@@ -17,7 +17,7 @@ done
 [[ -z $MONO_ROOT || -z $OUT_BASE ]] && echo "Usage: $0 <mono-root> <out-base> [--org org] [--remote url]" >&2 && exit 1
 [[ ! -d $MONO_ROOT/.git ]] && echo "Monorepo root invalid" >&2 && exit 1
 command -v git-filter-repo >/dev/null || { echo "git-filter-repo not installed" >&2; exit 1; }
-SERVICE=fks-ninja
+SERVICE=fks_ninja
 WORK="$OUT_BASE/$SERVICE"
 rm -rf "$WORK"; mkdir -p "$OUT_BASE"
 echo "[STEP] Clone" >&2
@@ -29,7 +29,7 @@ if [[ -d fks_ninja ]]; then rsync -a fks_ninja/ ./; rm -rf fks_ninja; fi
 mkdir -p src tests .github/workflows docs
 
 # Add submodules (schema, scripts, actions, docker)
-declare -A MAPSUB=( [schema]=fks-shared-schema [scripts]=fks-shared-scripts [actions]=fks-shared-actions [docker]=fks-shared-docker )
+declare -A MAPSUB=( [schema]=shared_schema [scripts]=shared_scripts [actions]=shared_actions [docker]=shared_docker )
 for s in schema scripts actions docker; do
   url="git@github.com:$ORG/${MAPSUB[$s]}.git"; git submodule add -f "$url" "shared/$s" || true
 done
@@ -40,7 +40,7 @@ if [[ ! -f README.md ]]; then
   sed -e "s/{{REPO_NAME}}/$SERVICE/g" -e "s/{{DESCRIPTION}}/NinjaTrader integration & indicators/" -e "s/{{ORG}}/$ORG/" "$TEMPLATES/README.md.tpl" > README.md
 fi
 if [[ ! -f docs/architecture.md ]]; then
-  sed -e "s/{{INTERNAL_DEPS}}/shared-schema shared-scripts/" -e "s/{{SHARED_MODULES}}/schema scripts actions docker/" "$TEMPLATES/architecture.md.tpl" > docs/architecture.md
+  sed -e "s/{{INTERNAL_DEPS}}/shared_schema shared_scripts/" -e "s/{{SHARED_MODULES}}/schema scripts actions docker/" "$TEMPLATES/architecture.md.tpl" > docs/architecture.md
 fi
 sed -e "s/{{REPO_NAME}}/$SERVICE/g" "$TEMPLATES/Makefile.tpl" > Makefile
 cp "$TEMPLATES/update-submodules.sh" ./update-submodules.sh; chmod +x update-submodules.sh

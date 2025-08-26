@@ -162,7 +162,7 @@ generate_key() {
     
     # Generate new key
     ssh "$SSH_TARGET" "
-        ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N '' -C 'fks-\$(hostname)-\$(date +%Y%m%d)'
+        ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N '' -C 'fks_\$(hostname)-\$(date +%Y%m%d)'
         chmod 600 ~/.ssh/id_rsa
         chmod 644 ~/.ssh/id_rsa.pub
         echo 'New SSH key generated successfully'

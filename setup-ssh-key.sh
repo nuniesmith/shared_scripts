@@ -12,7 +12,7 @@ echo "==========================================="
 if [ -z "$1" ]; then
     echo "❌ Error: SSH key not provided"
     echo ""
-    echo "Usage: $0 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExample... actions_user@fks-dev'"
+    echo "Usage: $0 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExample... actions_user@fks_dev'"
     echo ""
     echo "You should get this key from:"
     echo "1. Discord webhook notification when a new server is created"
@@ -25,7 +25,7 @@ SSH_KEY="$1"
 # Validate SSH key format
 if [[ ! "$SSH_KEY" =~ ^ssh-(rsa|ed25519|ecdsa).* ]]; then
     echo "❌ Error: Invalid SSH key format"
-    echo "Expected format: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExample... actions_user@fks-dev"
+    echo "Expected format: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExample... actions_user@fks_dev"
     exit 1
 fi
 
@@ -48,7 +48,7 @@ echo ""
 echo "4. 🔐 Also add the SSH key as a Deploy Key:"
 echo "   a. Go to: https://github.com/nuniesmith/fks/settings/keys"
 echo "   b. Click 'Add deploy key'"
-echo "   c. Title: 'actions_user@fks-dev'"
+echo "   c. Title: 'actions_user@fks_dev'"
 echo "   d. Key: (same key as above)"
 echo "   e. ☑️ Check 'Allow write access'"
 echo ""

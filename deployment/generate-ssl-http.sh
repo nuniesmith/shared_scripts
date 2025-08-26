@@ -45,7 +45,7 @@ else
 fi
 
 echo "🔐 Configuring nginx for SSL..."
-sudo tee /etc/nginx/sites-available/fks-ssl > /dev/null << 'NGINXEOF'
+sudo tee /etc/nginx/sites-available/fks_ssl > /dev/null << 'NGINXEOF'
 server {
     listen 80;
     server_name fkstrading.xyz www.fkstrading.xyz;
@@ -78,7 +78,7 @@ server {
 NGINXEOF
 
 echo "🔐 Enabling SSL site..."
-sudo ln -sf /etc/nginx/sites-available/fks-ssl /etc/nginx/sites-enabled/
+sudo ln -sf /etc/nginx/sites-available/fks_ssl /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 
 echo "🔐 Testing nginx configuration..."

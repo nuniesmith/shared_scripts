@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Perform a dry-run extraction: clone, filter, list resulting tree sizes, without pushing.
-# Usage: ./migration/dry-run-extraction.sh /path/to/mono-root /tmp/output fks-api
+# Usage: ./migration/dry-run-extraction.sh /path/to/mono-root /tmp/output fks_api
 set -euo pipefail
 MONO=${1:-}
 OUT=${2:-}

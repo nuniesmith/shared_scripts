@@ -2,7 +2,7 @@
 # Generic single-service extractor driven by extraction-map.yml
 # Preserves history only for the service paths, seeds scaffolding & submodules.
 # Usage: ./migration/extract-service.sh <service-name> <mono-root> <out-dir> [--org yourorg] [--remote git@github.com:org/repo.git]
-# Example: ./migration/extract-service.sh fks-api . ./_out --org yourorg --remote git@github.com:yourorg/fks-api.git
+# Example: ./migration/extract-service.sh fks_api . ./_out --org yourorg --remote git@github.com:yourorg/fks_api.git
 set -euo pipefail
 
 SERVICE=${1:-}
@@ -90,7 +90,7 @@ for p in "${paths[@]}"; do
 done
 
 echo "[STEP] Add submodules" >&2
-declare -A MAPSUB=( [python]=fks-shared-python [schema]=fks-shared-schema [scripts]=fks-shared-scripts [docker]=fks-shared-docker [nginx]=fks-shared-nginx [react]=fks-shared-react [rust]=fks-shared-rust [actions]=fks-shared-actions )
+declare -A MAPSUB=( [python]=shared_python [schema]=shared_schema [scripts]=shared_scripts [docker]=shared_docker [nginx]=shared_nginx [react]=shared_react [rust]=shared_rust [actions]=shared_actions )
 for s in "${subs[@]:-}"; do
   [[ -z $s ]] && continue
   repo="${MAPSUB[$s]:-}"
@@ -102,7 +102,7 @@ done
 echo "[STEP] Apply Python import rewrite" >&2
 if grep -RIl '^from fks_shared\.' src >/dev/null 2>&1; then
   grep -RIl '^from fks_shared\.' src | while read -r f; do
-    sed -i "s/^from fks_shared\./from fks_shared_python./" "$f" || true
+    sed -i "s/^from fks_shared\./from shared_python./" "$f" || true
   done
 fi
 

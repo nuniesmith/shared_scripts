@@ -32,8 +32,8 @@ if systemctl is-active --quiet docker.service; then
     echo "  Version: $(docker --version | cut -d' ' -f3 | cut -d',' -f1)"
     
     # Test Docker networking
-    if docker network create fks-status-test-$$ >/dev/null 2>&1; then
-        docker network rm fks-status-test-$$ >/dev/null 2>&1
+    if docker network create fks_status-test-$$ >/dev/null 2>&1; then
+        docker network rm fks_status-test-$$ >/dev/null 2>&1
         echo -e "  Networking: ${GREEN}✅ Working${NC}"
     else
         echo -e "  Networking: ${RED}❌ Failed${NC}"

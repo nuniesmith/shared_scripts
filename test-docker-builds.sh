@@ -37,7 +37,7 @@ fi
 
 echo ""
 echo "🔍 Testing Nginx build..."
-if docker build -f deployment/docker/nginx/Dockerfile -t fks-nginx:test .; then
+if docker build -f deployment/docker/nginx/Dockerfile -t fks_nginx:test .; then
     echo "✅ Nginx build successful"
 else
     echo "❌ Nginx build failed"
@@ -46,7 +46,7 @@ fi
 
 echo ""
 echo "🧹 Cleaning up test images..."
-docker rmi fks:api-test fks:worker-test fks:web-test fks-nginx:test 2>/dev/null || true
+docker rmi fks:api-test fks:worker-test fks:web-test fks_nginx:test 2>/dev/null || true
 
 echo ""
 echo "🎉 All Docker builds completed successfully!"

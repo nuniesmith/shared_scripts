@@ -82,7 +82,7 @@ docker stop $(docker ps -aq) 2>/dev/null || true
 docker rm $(docker ps -aq) 2>/dev/null || true
 
 # Remove problematic networks
-for network in $(docker network ls --format '{{.Name}}' | grep -E '^fks-'); do
+for network in $(docker network ls --format '{{.Name}}' | grep -E '^fks_'); do
     log "Removing network: $network"
     docker network rm "$network" 2>/dev/null || true
 done

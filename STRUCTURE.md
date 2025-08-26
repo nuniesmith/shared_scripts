@@ -63,7 +63,7 @@ Each domain `README.md` MUST include:
 ## Adding a New Command
 
 1. Implement logic in an appropriate domain file exporting `feature_do_xyz`.
-2. Create `bin/fks-xyz`:
+2. Create `bin/fks_xyz`:
 
 ```bash
 #!/usr/bin/env bash
@@ -111,7 +111,7 @@ Future: Bats tests under `qa/tests/` for libs + smoke tests gated (optional) by 
 
 * [ ] Migrate legacy `deployment/` into `domains/deploy/`
 * [ ] Centralize SSL logic
-* [ ] Introduce `bin/fks-env` for env management
+* [ ] Introduce `bin/fks_env` for env management
 * [ ] Add Bats harness
 * [ ] Enforce formatting via pre-commit
 

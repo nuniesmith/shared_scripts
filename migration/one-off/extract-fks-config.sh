@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# One-off extraction script for fks-config service.
+# One-off extraction script for fks_config service.
 # Performs history filter, adds submodules (rust,schema,scripts,actions,docker), and validates cargo run.
-# Usage: ./migration/one-off/extract-fks-config.sh <mono-root> <out-base> [--org yourorg] [--remote git@github.com:org/fks-config.git]
+# Usage: ./migration/one-off/extract-fks_config.sh <mono-root> <out-base> [--org yourorg] [--remote git@github.com:org/fks_config.git]
 set -euo pipefail
 MONO_ROOT=${1:-}
 OUT_BASE=${2:-}
@@ -18,7 +18,7 @@ done
 [[ -z $MONO_ROOT || -z $OUT_BASE ]] && echo "Usage: $0 <mono-root> <out-base> [--org org] [--remote url]" >&2 && exit 1
 [[ ! -d $MONO_ROOT/.git ]] && echo "Monorepo root invalid" >&2 && exit 1
 command -v git-filter-repo >/dev/null || { echo "git-filter-repo not installed" >&2; exit 1; }
-SERVICE=fks-config
+SERVICE=fks_config
 WORK="$OUT_BASE/$SERVICE"
 rm -rf "$WORK"
 mkdir -p "$OUT_BASE"
@@ -57,7 +57,7 @@ if [[ -f src/model.rs && ! -f src/config.rs ]]; then
 fi
 
 # Add submodules
-declare -A MAPSUB=( [rust]=fks-shared-rust [schema]=fks-shared-schema [scripts]=fks-shared-scripts [actions]=fks-shared-actions [docker]=fks-shared-docker )
+declare -A MAPSUB=( [rust]=shared_rust [schema]=shared_schema [scripts]=shared_scripts [actions]=shared_actions [docker]=shared_docker )
 for s in rust schema scripts actions docker; do
   repo="${MAPSUB[$s]}"
   url="git@github.com:$ORG/$repo.git"

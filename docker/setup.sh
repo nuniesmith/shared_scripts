@@ -19,7 +19,7 @@ readonly DOCKER_SETUP_LOADED="$(date +%s)"
 # Docker configuration
 readonly COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
 readonly COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-fks}"
-readonly DOCKER_NETWORK_NAME="${FKS_DOCKER_NETWORK_NAME:-fks-network}"
+readonly DOCKER_NETWORK_NAME="${FKS_DOCKER_NETWORK_NAME:-fks_network}"
 
 # Global variables
 COMPOSE_CMD=""

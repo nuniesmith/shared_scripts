@@ -131,10 +131,10 @@ start_minikube() {
     log "Configuring kubectl for Minikube..."
     kubectl config use-context minikube || error "Failed to set Minikube context."
     
-    log "Creating namespaces for fks-development, fks-staging, and fks-production..."
-    kubectl create namespace fks-development || log "Namespace fks-development already exists."
-    kubectl create namespace fks-staging || log "Namespace fks-staging already exists."
-    kubectl create namespace fks-production || log "Namespace fks-production already exists."
+    log "Creating namespaces for fks_development, fks_staging, and fks_production..."
+    kubectl create namespace fks_development || log "Namespace fks_development already exists."
+    kubectl create namespace fks_staging || log "Namespace fks_staging already exists."
+    kubectl create namespace fks_production || log "Namespace fks_production already exists."
     
     # Generate and save join command for worker nodes
     log "Generating join command for worker nodes..."

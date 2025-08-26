@@ -319,13 +319,13 @@ main() {
         log "INFO" "✅ Docker networking is properly configured"
     fi
     
-    # Clean up any existing fks-network that wasn't created by compose
+    # Clean up any existing fks_network that wasn't created by compose
     # This avoids label conflicts between manually created networks and compose-managed networks
-    if docker network inspect fks-network >/dev/null 2>&1; then
+    if docker network inspect fks_network >/dev/null 2>&1; then
         # Check if network has containers attached
-        if [ -z "$(docker network inspect fks-network -f '{{range .Containers}}{{.Name}} {{end}}' 2>/dev/null)" ]; then
-            log "INFO" "Removing existing fks-network to let docker-compose recreate it..."
-            docker network rm fks-network 2>/dev/null || true
+        if [ -z "$(docker network inspect fks_network -f '{{range .Containers}}{{.Name}} {{end}}' 2>/dev/null)" ]; then
+            log "INFO" "Removing existing fks_network to let docker-compose recreate it..."
+            docker network rm fks_network 2>/dev/null || true
         fi
     fi
     

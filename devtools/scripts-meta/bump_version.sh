@@ -58,7 +58,7 @@ if [[ -n $(git diff --name-only $PY_FILE $RUST_FILE $TS_FILE $CHANGELOG) ]]; the
   git add $PY_FILE $RUST_FILE $TS_FILE $CHANGELOG
   git commit -m "chore(version): bump shared libs to $NEXT"
   if [[ $TAG -eq 1 ]]; then
-    git tag "shared-v$NEXT"
+    git tag "shared_v$NEXT"
   fi
   echo "Done. Remember: git push && git push --tags"
 else

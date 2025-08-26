@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-off focused extraction for fks-api main service.
+# One-off focused extraction for fks_api main service.
 # Creates a clean working directory with history limited to service paths,
 # adds declared shared submodules, applies basic import rewrites, and prepares initial commit.
 # Prereqs: git-filter-repo installed, upstream empty GitHub repo already created.
@@ -10,10 +10,10 @@ if ! command -v git-filter-repo >/dev/null 2>&1; then
   echo "git-filter-repo not installed" >&2; exit 1; fi
 
 MONO_ROOT=${1:-.}
-TARGET_DIR=${2:-./_extracted-fks-api}
+TARGET_DIR=${2:-./_extracted-fks_api}
 REMOTE_URL=${3:-}
 ORG=${ORG:-yourorg}
-SERVICE=fks-api
+SERVICE=fks_api
 SERVICE_PATH=fks_api/src/fks_api
 
 echo "[STEP] Clone shallow working copy" >&2
@@ -46,12 +46,12 @@ git checkout -b main || true
 
 echo "[STEP] Add submodules" >&2
 declare -A SUBS=(
-  [python]=git@github.com:$ORG/fks-shared-python.git
-  [schema]=git@github.com:$ORG/fks-shared-schema.git
-  [scripts]=git@github.com:$ORG/fks-shared-scripts.git
-  [docker]=git@github.com:$ORG/fks-shared-docker.git
-  [actions]=git@github.com:$ORG/fks-shared-actions.git
-  [nginx]=git@github.com:$ORG/fks-shared-nginx.git
+  [python]=git@github.com:$ORG/shared_python.git
+  [schema]=git@github.com:$ORG/shared_schema.git
+  [scripts]=git@github.com:$ORG/shared_scripts.git
+  [docker]=git@github.com:$ORG/shared_docker.git
+  [actions]=git@github.com:$ORG/shared_actions.git
+  [nginx]=git@github.com:$ORG/shared_nginx.git
 )
 for name url in "${!SUBS[@]}"; do
   git submodule add -f "${SUBS[$name]}" "shared/$name" || true
@@ -60,7 +60,7 @@ done
 echo "[STEP] Basic Python import rewrites" >&2
 if command -v grep >/dev/null; then
   grep -Rl '^from fks_shared\.' src | while read -r file; do
-    sed -i "s/^from fks_shared\./from fks_shared_python./" "$file" || true
+    sed -i "s/^from fks_shared\./from shared_python./" "$file" || true
   done
 fi
 
@@ -73,7 +73,7 @@ if [[ ! -f README.md ]]; then
   sed -e "s/{{REPO_NAME}}/$SERVICE/g" -e "s/{{DESCRIPTION}}/API Service/" -e "s/{{ORG}}/$ORG/" "$TEMPLATES/README.md.tpl" > README.md
 fi
 if [[ ! -f docs/architecture.md ]]; then
-  sed -e "s/{{INTERNAL_DEPS}}/shared-python, shared-schema/" -e "s/{{SHARED_MODULES}}/python,schema,scripts,docker,actions,nginx/" "$TEMPLATES/architecture.md.tpl" > docs/architecture.md
+  sed -e "s/{{INTERNAL_DEPS}}/shared_python, shared_schema/" -e "s/{{SHARED_MODULES}}/python,schema,scripts,docker,actions,nginx/" "$TEMPLATES/architecture.md.tpl" > docs/architecture.md
 fi
 sed -e "s/{{REPO_NAME}}/$SERVICE/g" "$TEMPLATES/Makefile.tpl" > Makefile
 cp "$TEMPLATES/update-submodules.sh" ./update-submodules.sh; chmod +x update-submodules.sh
@@ -87,7 +87,7 @@ cp "$TEMPLATES/release-please-config.json" ./release-please-config.json
 cp "$TEMPLATES/release-please-workflow.yml" .github/workflows/release-please.yml
 
 git add .
-git commit -m "chore: initial extraction of fks-api service" || true
+git commit -m "chore: initial extraction of fks_api service" || true
 
 if [[ -n $REMOTE_URL ]]; then
   echo "[STEP] Setting remote origin -> $REMOTE_URL" >&2
@@ -96,5 +96,5 @@ if [[ -n $REMOTE_URL ]]; then
   git push -u origin main || true
 fi
 
-echo "[DONE] fks-api extraction prepared at $TARGET_DIR"
+echo "[DONE] fks_api extraction prepared at $TARGET_DIR"
 popd >/dev/null
