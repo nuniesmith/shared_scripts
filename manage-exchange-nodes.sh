@@ -90,25 +90,25 @@ stop_exchange() {
     # Map exchange names to container names
     case $exchange in
         nyse|NYSE)
-            container="fks_node_network_nyse"
+            container="fks_nodes_nyse"
             ;;
         cme|CME)
-            container="fks_node_network_cme"
+            container="fks_nodes_cme"
             ;;
         lse|LSE)
-            container="fks_node_network_lse"
+            container="fks_nodes_lse"
             ;;
         eurex|EUREX)
-            container="fks_node_network_eurex"
+            container="fks_nodes_eurex"
             ;;
         asx|ASX)
-            container="fks_node_network_asx"
+            container="fks_nodes_asx"
             ;;
         tse|TSE)
-            container="fks_node_network_tse"
+            container="fks_nodes_tse"
             ;;
         sgx|SGX)
-            container="fks_node_network_sgx"
+            container="fks_nodes_sgx"
             ;;
         *)
             print_error "Unknown exchange: $exchange"
@@ -129,7 +129,7 @@ show_status() {
     # Check each exchange node
     local exchanges=("NYSE" "CME" "LSE" "EUREX" "ASX" "TSE" "SGX")
     for exchange in "${exchanges[@]}"; do
-        local container="fks_node_network_${exchange,,}"
+        local container="fks_nodes_${exchange,,}"
         if docker ps | grep -q "$container"; then
             local port=$(docker port "$container" 2>/dev/null | grep -oP '0.0.0.0:\K\d+' | head -1)
             echo -e "${exchange}: ${GREEN}Running${NC} - Port: ${port:-N/A}"

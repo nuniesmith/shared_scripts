@@ -11,7 +11,7 @@ COMPONENTS=(
   "fks_shared:repo/fks_shared"
   "fks_config:repo/fks_config"
   "fks_docker_builder:repo/fks_docker_builder"
-  "fks_node_network:repo/fks_node_network"
+  "fks_nodes:repo/fks_nodes"
   "fks_execution:repo/fks_execution"
   "fks_data:repo/fks_data"
   "fks_engine:repo/fks_engine"
