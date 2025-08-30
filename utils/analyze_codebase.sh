@@ -8,6 +8,8 @@
 #   --full: Generate full file contents report (optional).
 #   --lint: Run language-specific linters and generate lint_report.txt.
 #   --output=DIR: Specify output directory (defaults to timestamped).
+#   --exclude=DIR1,DIR2,...: Comma-separated directories to exclude (e.g., shared,backup). Optional.
+#   --skip-shared: Skip the 'shared/' directory by default (boolean flag).
 #   --help: Show this help message.
 
 set -e
@@ -17,12 +19,16 @@ FULL=0
 LINT=0
 OUTPUT_DIR=""
 TARGET_DIR=""
+EXCLUDE_LIST=""
+SKIP_SHARED=0
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --full) FULL=1; shift ;;
         --lint) LINT=1; shift ;;
         --output=*) OUTPUT_DIR="${1#*=}"; shift ;;
-        --help) echo "Usage: $0 [options] <directory_path>"; echo "Options: --full, --lint, --output=DIR, --help"; exit 0 ;;
+        --exclude=*) EXCLUDE_LIST="${1#*=}"; shift ;;
+        --skip-shared) SKIP_SHARED=1; shift ;;
+        --help) echo "Usage: $0 [options] <directory_path>"; echo "Options: --full, --lint, --output=DIR, --exclude=DIR1,DIR2, --skip-shared, --help"; exit 0 ;;
         *) TARGET_DIR="$1"; shift ;;
     esac
 done
@@ -130,6 +136,17 @@ echo "Reports will be in: $OUTPUT_DIR"
 echo "Full contents: $( [ $FULL -eq 1 ] && echo "Yes" || echo "No" )"
 echo "Linting: $( [ $LINT -eq 1 ] && echo "Yes" || echo "No" )"
 echo "Analysis type: $ANALYZE_TYPE"
+if [ -n "$EXCLUDE_LIST" ]; then
+    echo "Excluding directories: $EXCLUDE_LIST"
+fi
+if [ $SKIP_SHARED -eq 1 ]; then
+    echo "Skipping shared/ directory: Yes"
+    if [ -n "$EXCLUDE_LIST" ]; then
+        EXCLUDE_LIST="$EXCLUDE_LIST,shared"
+    else
+        EXCLUDE_LIST="shared"
+    fi
+fi
 
 # Common exclusions (expandable)
 EXCLUDE_HIDDEN="-not -path '*/\.*'"
@@ -137,6 +154,14 @@ if [ "$ANALYZE_TYPE" = "docker" ]; then
     EXCLUDE_HIDDEN=""
 fi
 EXCLUDE_PATHS="$EXCLUDE_HIDDEN -not -path '*/__pycache__/*' -not -path '*/.pytest_cache/*' -not -path '*/.mypy_cache/*' -not -path '*/.tox/*' -not -path '*/venv/*' -not -path '*/env/*' -not -path '*/node_modules/*' -not -path '*/target/*' -not -path '*/bin/*' -not -path '*/obj/*' -not -path '*/.vs/*' -not -path '*/.idea/*' -not -path '*/.vscode/*' -not -path '*/coverage/*' -not -path '*/dist/*' -not -path '*/build/*'"
+
+# Add custom excludes
+if [ -n "$EXCLUDE_LIST" ]; then
+    IFS=',' read -r -a excludes <<< "$EXCLUDE_LIST"
+    for exclude in "${excludes[@]}"; do
+        EXCLUDE_PATHS="$EXCLUDE_PATHS -not -path '*/$exclude/*'"
+    done
+fi
 
 # Compute grep filter
 GREP_FILTER=""
@@ -151,8 +176,12 @@ FILTERED_FIND="find \"$TARGET_DIR\" -type f $EXCLUDE_PATHS $GREP_FILTER 2>/dev/n
 echo "Generating file tree structure report..."
 TREE_OPTS=""
 if [ -z "$EXCLUDE_HIDDEN" ]; then TREE_OPTS="-a"; fi
+TREE_EXCLUDE_PATTERN="__pycache__|.git|.pytest_cache|.mypy_cache|.tox|venv|env|node_modules|target|bin|obj|.vs|.idea|.vscode|coverage|dist|build"
+if [ -n "$EXCLUDE_LIST" ]; then
+    TREE_EXCLUDE_PATTERN="$TREE_EXCLUDE_PATTERN|$(echo "$EXCLUDE_LIST" | sed 's/,/|/g')"
+fi
 if command -v tree &> /dev/null; then
-    tree $TREE_OPTS -n -I "__pycache__|.git|.pytest_cache|.mypy_cache|.tox|venv|env|node_modules|target|bin|obj|.vs|.idea|.vscode|coverage|dist|build" "$TARGET_DIR" > "$OUTPUT_DIR/file_structure.txt"
+    tree $TREE_OPTS -n -I "$TREE_EXCLUDE_PATTERN" "$TARGET_DIR" > "$OUTPUT_DIR/file_structure.txt"
 else
     eval "find \"$TARGET_DIR\" $EXCLUDE_PATHS -type f -o -type d 2>/dev/null | sort | sed 's/[^/]*\//|   /g;s/| *\([^| ]\)/+--- \1/g'" > "$OUTPUT_DIR/file_structure.txt"
 fi
