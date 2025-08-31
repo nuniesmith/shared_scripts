@@ -5,12 +5,15 @@
 # Supports Python, Rust, C#, JS/TS, Java, Go, etc.
 # Usage: ./analyze_codebase.sh [options] <directory_path>
 # Options:
-#   --full: Generate full file contents report (optional).
-#   --lint: Run language-specific linters and generate lint_report.txt.
-#   --output=DIR: Specify output directory (defaults to timestamped).
-#   --exclude=DIR1,DIR2,...: Comma-separated directories to exclude (e.g., shared,backup). Optional.
-#   --skip-shared: Skip the 'shared/' directory by default (boolean flag).
-#   --help: Show this help message.
+#   --full                 Generate full file contents report (optional)
+#   --lint                 Run language-specific linters and generate lint_report.txt
+#   --output=DIR           Specify output directory (defaults to timestamped)
+#   --exclude=DIR1,DIR2    Comma-separated directories to exclude (e.g., shared,backup)
+#   --skip-shared          Skip the 'shared/' directory
+#   --type=KIND            Non-interactive analysis kind (numeric or alias: all|python|rust|csharp|jsts|mdtxt|shbash|docker)
+#   --analyze-type=KIND    Alias for --type
+#   (env overrides) ANALYZE_TYPE / ANALYZE_CHOICE / ANALYZE_KIND
+#   --help                 Show this help message
 
 set -e
 
@@ -21,6 +24,7 @@ OUTPUT_DIR=""
 TARGET_DIR=""
 EXCLUDE_LIST=""
 SKIP_SHARED=0
+TYPE_CHOICE=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --full) FULL=1; shift ;;
@@ -28,6 +32,8 @@ while [[ $# -gt 0 ]]; do
         --output=*) OUTPUT_DIR="${1#*=}"; shift ;;
         --exclude=*) EXCLUDE_LIST="${1#*=}"; shift ;;
         --skip-shared) SKIP_SHARED=1; shift ;;
+    --type=*) TYPE_CHOICE="${1#*=}"; shift ;;
+    --analyze-type=*) TYPE_CHOICE="${1#*=}"; shift ;;
         --help) echo "Usage: $0 [options] <directory_path>"; echo "Options: --full, --lint, --output=DIR, --exclude=DIR1,DIR2, --skip-shared, --help"; exit 0 ;;
         *) TARGET_DIR="$1"; shift ;;
     esac
@@ -39,17 +45,33 @@ if [ -z "$TARGET_DIR" ] || [ ! -d "$TARGET_DIR" ]; then
     exit 1
 fi
 
-# Ask for analysis type
-echo "Which files/code to analyze? Choose one of the following options:"
-echo "1. all - All supported languages and files"
-echo "2. python - Python files and related configs"
-echo "3. rust - Rust files and Cargo configs"
-echo "4. csharp - C# files and project files"
-echo "5. jsts - JavaScript/TypeScript, HTML, CSS files and configs"
-echo "6. mdtxt - Markdown and text files"
-echo "7. shbash - Shell/bash scripts, Makefiles, Dockerfiles, and docker-compose files"
-echo "8. docker - Dockerfiles, docker-compose files, and .env files"
-read -r ANALYZE_INPUT
+if [ -z "$TYPE_CHOICE" ]; then
+    # Allow environment overrides for non-interactive use
+    for env_var in ANALYZE_TYPE ANALYZE_CHOICE ANALYZE_KIND; do
+        if [ -z "$TYPE_CHOICE" ] && [ -n "${!env_var}" ]; then
+            TYPE_CHOICE="${!env_var}"
+        fi
+    done
+fi
+
+if [ -n "$TYPE_CHOICE" ]; then
+    ANALYZE_INPUT="$TYPE_CHOICE"
+else
+    echo "Which files/code to analyze? Choose one of the following options:"
+    echo "1. all - All supported languages and files"
+    echo "2. python - Python files and related configs"
+    echo "3. rust - Rust files and Cargo configs"
+    echo "4. csharp - C# files and project files"
+    echo "5. jsts - JavaScript/TypeScript, HTML, CSS files and configs"
+    echo "6. mdtxt - Markdown and text files"
+    echo "7. shbash - Shell/bash scripts, Makefiles, Dockerfiles, and docker-compose files"
+    echo "8. docker - Dockerfiles, docker-compose files, and .env files"
+    # Interactive read (may exit early under set -e if EOF); guard with || true
+    if ! read -r ANALYZE_INPUT; then
+        echo "No input provided and no --type specified." >&2
+        exit 1
+    fi
+fi
 
 # Map numbered input to type
 case "$ANALYZE_INPUT" in
@@ -62,7 +84,7 @@ case "$ANALYZE_INPUT" in
     7|shbash) ANALYZE_TYPE="shbash" ;;
     8|docker) ANALYZE_TYPE="docker" ;;
     *)
-        echo "Invalid choice. Please select a valid option."
+        echo "Invalid choice: $ANALYZE_INPUT" >&2
         exit 1
         ;;
 esac

@@ -1,84 +1,76 @@
-#!/bin/bash
-# filepath: /home/${USER}/fks/scripts/main.sh
-# FKS Trading Systems - Enhanced Main Script
-# Hardcoded paths version with Docker and Requirements integration
+#!/usr/bin/env bash
+# Universal Service Orchestrator (neutralized)
+# Backward-compatible with prior hardcoded FKS main.sh (v0.2.x).
+# New: dynamic root detection, PROJECT_NS + SERVICE_FAMILY namespace, unified logging.
 
-set -e
+set -euo pipefail
 
 # =============================================================================
 # HARDCODED CONFIGURATION
 # =============================================================================
 
-# Base paths (hardcoded)
-PROJECT_ROOT="/home/${USER}/fks"
-SCRIPTS_DIR="/home/${USER}/fks/scripts"
-BUILD_SCRIPTS_DIR="/home/${USER}/fks/scripts/build"
-CONFIG_DIR="/home/${USER}/fks/config"
-DATA_DIR="/home/${USER}/fks/data"
-LOGS_DIR="/home/${USER}/fks/logs"
-DEPLOYMENT_DIR="/home/${USER}/fks/deployment"
-TEMP_DIR="/home/${USER}/fks/temp"
+PROJECT_NS="${PROJECT_NS:-fks}"           # namespace (was implicitly fks)
+SERVICE_FAMILY="${SERVICE_FAMILY:-trading}" # logical grouping; customizable
 
-# Key files
-MAIN_CONFIG="/home/${USER}/fks/config/main.yaml"
-SERVICES_CONFIG="/home/${USER}/fks/config/services.yaml"
-DOCKER_CONFIG="/home/${USER}/fks/config/docker.yaml"
-COMPOSE_FILE="/home/${USER}/fks/docker-compose.yml"
-LOG_FILE="/home/${USER}/fks/logs/main.log"
-REQUIREMENTS_FILE="/home/${USER}/fks/requirements.txt"
+# Root autodetect: if this script is inside shared_scripts, assume repo root two levels up unless OVERRIDE_ROOT set.
+if [[ -n "${OVERRIDE_ROOT:-}" ]]; then
+    PROJECT_ROOT="$OVERRIDE_ROOT"
+else
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    # Allow execution from anywhere; look upward for marker dirs
+    _probe="$SCRIPT_DIR"
+    while [[ "$ _probe" != "/" ]]; do
+        if [[ -d "$_probe/config" && -d "$_probe/scripts" ]] || [[ -f "$_probe/.project-root" ]]; then
+            PROJECT_ROOT="$_probe"
+            break
+        fi
+        _probe="$(dirname "$_probe")"
+    done
+    PROJECT_ROOT="${PROJECT_ROOT:-$SCRIPT_DIR}" # fallback
+fi
+
+SCRIPTS_DIR="$PROJECT_ROOT/scripts"
+BUILD_SCRIPTS_DIR="$SCRIPTS_DIR/build"
+CONFIG_DIR="$PROJECT_ROOT/config"
+DATA_DIR="$PROJECT_ROOT/data"
+LOGS_DIR="$PROJECT_ROOT/logs"
+DEPLOYMENT_DIR="$PROJECT_ROOT/deployment"
+TEMP_DIR="$PROJECT_ROOT/temp"
+
+MAIN_CONFIG="$CONFIG_DIR/main.yaml"
+SERVICES_CONFIG="$CONFIG_DIR/services.yaml"
+DOCKER_CONFIG="$CONFIG_DIR/docker.yaml"
+COMPOSE_FILE="$PROJECT_ROOT/docker-compose.yml"
+LOG_FILE="$LOGS_DIR/main.log"
+REQUIREMENTS_FILE="$PROJECT_ROOT/requirements.txt"
 
 # Build scripts
-DOCKER_SCRIPT="/home/${USER}/fks/scripts/build/docker.sh"
-REQUIREMENTS_SCRIPT="/home/${USER}/fks/scripts/build/requirements.sh"
+DOCKER_SCRIPT="$BUILD_SCRIPTS_DIR/docker.sh"
+REQUIREMENTS_SCRIPT="$BUILD_SCRIPTS_DIR/requirements.sh"
 
 # Script settings
-MAIN_SCRIPT_VERSION="0.2.0"
+MAIN_SCRIPT_VERSION="0.3.0"
 FKS_MODE="${FKS_MODE:-development}"
 
-# =============================================================================
-# SIMPLE LOGGING
-# =============================================================================
+# Import centralized logging if available
+if [[ -f "$PROJECT_ROOT/shared_repos/shared_scripts/lib/log.sh" ]]; then
+    # if running inside mono-repo with shared_repos layout
+    source "$PROJECT_ROOT/shared_repos/shared_scripts/lib/log.sh"
+elif [[ -f "$PROJECT_ROOT/scripts/lib/log.sh" ]]; then
+    source "$PROJECT_ROOT/scripts/lib/log.sh"
+fi
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-WHITE='\033[1;37m'
-NC='\033[0m'
+: "${LOG_FORMAT:=plain}" # allow override
 
-log_info() {
-    local msg="$1"
-    echo -e "${GREEN}[INFO]${NC} $msg"
-    echo "[$(date)] [INFO] $msg" >> "$LOG_FILE" 2>/dev/null || true
-}
-
-log_warn() {
-    local msg="$1"
-    echo -e "${YELLOW}[WARN]${NC} $msg"
-    echo "[$(date)] [WARN] $msg" >> "$LOG_FILE" 2>/dev/null || true
-}
-
-log_error() {
-    local msg="$1"
-    echo -e "${RED}[ERROR]${NC} $msg" >&2
-    echo "[$(date)] [ERROR] $msg" >> "$LOG_FILE" 2>/dev/null || true
-}
-
-log_success() {
-    local msg="$1"
-    echo -e "${GREEN}[SUCCESS]${NC} ✅ $msg"
-    echo "[$(date)] [SUCCESS] $msg" >> "$LOG_FILE" 2>/dev/null || true
-}
-
-log_debug() {
-    if [[ "${DEBUG:-false}" == "true" ]]; then
-        local msg="$1"
-        echo -e "${BLUE}[DEBUG]${NC} $msg"
-        echo "[$(date)] [DEBUG] $msg" >> "$LOG_FILE" 2>/dev/null || true
-    fi
-}
+# If no logging functions (standalone usage), define minimal fallbacks
+if ! declare -F log_info >/dev/null 2>&1; then
+    _plain_log() { printf '[%s] %s %s\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" "$1" "$2" >&2; }
+    log_info() { _plain_log INFO "$*"; }
+    log_warn() { _plain_log WARN "$*"; }
+    log_error() { _plain_log ERROR "$*"; }
+    log_success() { _plain_log INFO "$*"; }
+    log_debug() { [[ "${DEBUG:-false}" == "true" ]] && _plain_log DEBUG "$*" || true; }
+fi
 
 # =============================================================================
 # SCRIPT INTEGRATION
@@ -192,18 +184,18 @@ docker_compose() {
 # =============================================================================
 
 show_system_status() {
-    log_info "📊 FKS Trading Systems Status"
+    log_info "📊 ${PROJECT_NS^^} System Status"
     echo ""
     
     # Environment info
-    echo -e "${CYAN}Environment:${NC}"
+    echo "Environment:"
     echo "  Mode: $FKS_MODE"
     echo "  Version: $MAIN_SCRIPT_VERSION"
     echo "  Project Root: $PROJECT_ROOT"
     echo ""
     
     # Directory status
-    echo -e "${CYAN}Directories:${NC}"
+    echo "Directories:"
     local dirs=("$CONFIG_DIR:config" "$DATA_DIR:data" "$LOGS_DIR:logs" "$SCRIPTS_DIR:scripts" "$DEPLOYMENT_DIR:deployment")
     for entry in "${dirs[@]}"; do
         local dir="${entry%:*}"
@@ -218,7 +210,7 @@ show_system_status() {
     echo ""
     
     # Key files
-    echo -e "${CYAN}Key Files:${NC}"
+    echo "Key Files:"
     local files=(
         "$COMPOSE_FILE:docker-compose.yml"
         "$MAIN_CONFIG:main.yaml"
@@ -252,7 +244,7 @@ show_system_status() {
 }
 
 check_build_scripts_status() {
-    echo -e "${CYAN}Build Scripts:${NC}"
+    echo "Build Scripts:"
     
     if [[ -f "$DOCKER_SCRIPT" ]]; then
         echo "  ✅ Docker script: Available"
@@ -279,7 +271,7 @@ check_build_scripts_status() {
 }
 
 check_docker_status() {
-    echo -e "${CYAN}Docker Status:${NC}"
+    echo "Docker Status:"
     
     if command -v docker >/dev/null 2>&1; then
         if docker info >/dev/null 2>&1; then
@@ -307,7 +299,7 @@ check_docker_status() {
 }
 
 check_services_status() {
-    echo -e "${CYAN}Services Status:${NC}"
+    echo "Services Status:"
     
     local deployment_type="${FKS_DEPLOYMENT_TYPE:-standard}"
     log_debug "Checking services for deployment type: $deployment_type"
@@ -344,7 +336,7 @@ check_services_status() {
 }
 
 check_requirements_status() {
-    echo -e "${CYAN}Requirements Status:${NC}"
+    echo "Requirements Status:"
     
     if [[ -f "$REQUIREMENTS_FILE" ]]; then
         local package_count=$(grep -c '^[a-zA-Z0-9_-]' "$REQUIREMENTS_FILE" 2>/dev/null || echo "0")
@@ -604,7 +596,7 @@ docker_logs() {
 # =============================================================================
 
 setup_system() {
-    log_info "🔧 Setting up FKS Trading Systems..."
+    log_info "🔧 Setting up ${PROJECT_NS} system..."
     
     # Create directories
     log_info "Creating directories..."
@@ -724,7 +716,7 @@ clean_system() {
 }
 
 update_system() {
-    log_info "🔄 Updating FKS Trading Systems..."
+    log_info "🔄 Updating ${PROJECT_NS} system..."
     
     # Generate requirements
     if [[ -f "$REQUIREMENTS_SCRIPT" ]]; then
@@ -751,40 +743,40 @@ update_system() {
 
 show_help() {
     cat << EOF
-${WHITE}FKS Trading Systems - Enhanced Main Script v$MAIN_SCRIPT_VERSION${NC}
-${CYAN}Mode: $FKS_MODE${NC}
+${PROJECT_NS^^} Universal Orchestrator v$MAIN_SCRIPT_VERSION
+Mode: $FKS_MODE
 
-${YELLOW}SYSTEM COMMANDS:${NC}
+SYSTEM COMMANDS:
   status                      Show comprehensive system status
   health                      Run health check
   setup                       Setup system directories and scripts
   update                      Update requirements and rebuild
   clean [basic|docker|requirements|all]  Clean system
 
-${YELLOW}SERVICE COMMANDS:${NC}
+SERVICE COMMANDS:
   start [services...]         Start services
   stop [services...]          Stop services  
   restart [services...]       Restart services
   logs [services...]          Show service logs
 
-${YELLOW}BUILD COMMANDS:${NC}
+BUILD COMMANDS:
   build [services...]         Build services (compose)
   build-images [services...]  Build Docker images (docker.sh)
   generate-dockerfiles        Generate Dockerfiles
 
-${YELLOW}REQUIREMENTS COMMANDS:${NC}
+REQUIREMENTS COMMANDS:
   generate-requirements       Generate service requirements
   requirements-status         Show requirements status
   list-services              List discovered services
   validate-requirements      Validate requirements system
   clean-requirements         Clean requirements files
 
-${YELLOW}DOCKER COMMANDS:${NC}
+DOCKER COMMANDS:
   docker-status              Show Docker system status
   docker-cleanup [level]     Clean Docker system
   docker-logs [service]      Show Docker logs
 
-${YELLOW}EXAMPLES:${NC}
+EXAMPLES:
   $0 status                   # Show system status
   $0 setup                    # Initial system setup
   $0 generate-requirements    # Generate service requirements
@@ -795,12 +787,12 @@ ${YELLOW}EXAMPLES:${NC}
   $0 clean all                # Full system cleanup
   $0 update                   # Update everything
 
-${WHITE}Integration:${NC}
+Integration:
   Docker Script: $DOCKER_SCRIPT
   Requirements Script: $REQUIREMENTS_SCRIPT
   Compose File: $COMPOSE_FILE
 
-${WHITE}Paths:${NC}
+Paths:
   Project: $PROJECT_ROOT
   Config: $CONFIG_DIR
   Logs: $LOGS_DIR

@@ -1,16 +1,30 @@
 #!/usr/bin/env bash
-# Purpose: Environment & mode detection, .env loading (idempotent)
-# Exports: detect_mode, load_dotenv, require_cmd, PROJECT_ROOT, SCRIPT_ROOT
+# Purpose: Environment & mode detection, .env loading (idempotent), namespace + root discovery
+# Exports: detect_mode, load_dotenv, require_cmd, PROJECT_ROOT, SCRIPT_ROOT, PROJECT_NS
 
 set -euo pipefail
 
 SCRIPT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_ROOT/.." && pwd)"
+
+# Root discovery: ascend until marker found or stop at filesystem root
+_discover_root() {
+  local probe="$SCRIPT_ROOT"
+  [[ -n "${OVERRIDE_ROOT:-}" ]] && { echo "$OVERRIDE_ROOT"; return 0; }
+  while [[ "$probe" != "/" ]]; do
+    if [[ -f "$probe/.project-root" || -d "$probe/config" && -d "$probe/scripts" ]]; then
+      echo "$probe"; return 0
+    fi
+    probe="$(dirname "$probe")"
+  done
+  echo "$SCRIPT_ROOT" # fallback
+}
+PROJECT_ROOT="$(_discover_root)"
 
 # shellcheck source=log.sh
 [[ -f "$SCRIPT_ROOT/log.sh" ]] && source "$SCRIPT_ROOT/log.sh"
 
 : "${FKS_MODE:=}"
+: "${PROJECT_NS:=fks}"
 : "${CI:=false}"
 
 _detect_ci() { [[ "${GITHUB_ACTIONS:-}" == "true" || "${CI}" == "true" ]]; }
@@ -42,3 +56,4 @@ require_cmd() {
 }
 
 export -f detect_mode load_dotenv require_cmd
+export PROJECT_NS PROJECT_ROOT SCRIPT_ROOT
