@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-import json
-import sys
-import time
+"""Standalone smoke script (excluded from normal pytest collection)."""
+import json, sys, time
 from urllib.parse import urlencode
-
 import requests
+if "pytest" in sys.modules:  # pragma: no cover
+    raise ImportError("Skip standalone smoke script during test collection")
 
 BASE = "http://localhost"
 
