@@ -18,7 +18,7 @@ while IFS= read -r line; do
   log "Provisioning $userhost (role=$role)"
   ssh -i "$key" -o StrictHostKeyChecking=no "$userhost" 'bash -s' <<'REMOTE'
 set -euo pipefail
-# Placeholder: call shared-scripts provisioning once present
+# Placeholder: call shared_scripts provisioning once present
 echo "Provision stub on $(hostname)"
 REMOTE
 
